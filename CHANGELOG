@@ -1,3 +1,6 @@
+==Version 2.1.0==
+-Added custom post type for number plates and custom fields for price and location.
+
 ==Version 2.0.0==
 -Added shortcodes for number plates, for form and displaying the list.
 
