@@ -11,9 +11,9 @@ if (!defined('ABSPATH')) {
 }
 
 function cpp_enqueue_scripts() {
-    wp_enqueue_script('cpp_custom_script', get_template_directory_uri() . 'script.js', array('jquery'), '1.0.0', true );
+    wp_enqueue_script('cpp_custom_script', plugins_url('/script.js', __FILE__), array('jquery'), '1.0.0', true );
 
-    wp_enqueue_style('cpp_custom_style', get_template_directory_uri() . 'style.css');
+    wp_enqueue_style('cpp_custom_style', plugins_url('/style.css', __FILE__));
 
     wp_localize_script('cpp_custom_script', 'cpp_script_data', array(
         'ajaxUrl' => admin_url('admin-ajax.php'),
@@ -466,7 +466,7 @@ function cpp_display_number_plates_list_shortcode() {
 								<i class="ti-arrow-top-right"></i>
 							</a>
 										
-							<a data-toggle="tooltip" class="remove-btn btn-action-icon listing-table-action listing-button-delete" href="javascript:void(0)" data-listing_id="9433" data-nonce="9cabffcf30" title="" data-bs-original-title="Remove">
+							<a data-toggle="tooltip" class="remove-btn btn-action-icon listing-table-action listing-button-delete" href="javascript:void(0)" data-listing_id="<?= get_the_ID() ?>" data-nonce="9cabffcf30" title="" data-bs-original-title="Remove">
 								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M7.06907 7.69027C7.37819 7.65937 7.65382 7.8849 7.68472 8.19405L8.05972 11.944C8.0907 12.2531 7.8651 12.5288 7.55602 12.5597C7.2469 12.5906 6.97124 12.3651 6.94033 12.0559L6.56533 8.30595C6.53442 7.99687 6.75995 7.72117 7.06907 7.69027Z" fill="currentColor"></path>
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M10.931 7.69027C11.2401 7.72117 11.4656 7.99687 11.4347 8.30595L11.0597 12.0559C11.0288 12.3651 10.7532 12.5906 10.444 12.5597C10.135 12.5288 9.90943 12.2531 9.94033 11.944L10.3153 8.19405C10.3462 7.8849 10.6219 7.65937 10.931 7.69027Z" fill="currentColor"></path>
