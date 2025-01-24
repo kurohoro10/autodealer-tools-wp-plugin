@@ -1,0 +1,5 @@
+==Version 2.0.0==
+-Added shortcodes for number plates, for form and displaying the list.
+
+==Version 1.0.0==
+-Extends WP Cardealer functionality by adding rental prices of hourly, daily and weekly.

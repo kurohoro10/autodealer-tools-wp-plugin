@@ -2,6 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
+ * Version: 2.0.0
  */
 
 //  Exit if accessed directly
@@ -187,7 +188,7 @@ function cpp_frontend_number_plates_input_shortcode() {
     $form_feedback = '';
 
     // Handle form submission
-    // if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpp_number_plates_nonce']) && wp_verify_nonce($_POST['cpp_number_plates_nonce'], 'cpp_number_plates')) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpp_number_plates_nonce']) && wp_verify_nonce($_POST['cpp_number_plates_nonce'], 'cpp_number_plates')) {
         $plate_title = isset($_POST['cpp_plate_title']) ? sanitize_text_field($_POST['cpp_plate_title']) : '';
         $plate_description = isset($_POST['cpp_plate_description']) ? sanitize_textarea_field($_POST['cpp_plate_description']) : '';
         $plate_price = isset($_POST['cpp_plate_price']) ? floatval($_POST['cpp_plate_price']) : 0;
@@ -208,10 +209,6 @@ function cpp_frontend_number_plates_input_shortcode() {
                 'date_updated' => current_time('mysql')
             );
 
-            echo '<pre>';
-            print_r($data);
-            echo '<pre>';
-
             $format = array('%d', '%s', '%s', '%f', '%s', '%s', '%s');
             $inserted = $wpdb->insert($table_name, $data, $format);
 
@@ -222,7 +219,7 @@ function cpp_frontend_number_plates_input_shortcode() {
                 $form_feedback = '<p style="color: red;">Failed to add number plate. Please try again later.</p>';
             }
         // }
-    // }
+    }
 
     // Only output the form for logged-in users
     ob_start();
