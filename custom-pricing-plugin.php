@@ -10,7 +10,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Add meta box to the listing post type only
+function cpp_enqueue_scripts() {
+    wp_enqueue_script('cpp_custom_script', get_template_directory_uri() . 'script.js', array('jquery'), '1.0.0', true );
+
+    wp_enqueue_style('cpp_custom_style', get_template_directory_uri() . 'style.css');
+
+    wp_localize_script('cpp_custom_script', 'cpp_script_data', array(
+        'ajaxUrl' => admin_url('admin-ajax.php'),
+        'nonce' => wp_create_nonce('cpp_nonce')
+    ));
+}
+
+add_action('wp_enqueue_scripts', 'cpp_enqueue_scripts');
+
+// Add meta box for prices to the listing post type only
 function cpp_add_price_meta_boxes() {
     add_meta_box(
         'cpp_pricing_meta_box',
@@ -23,7 +36,7 @@ function cpp_add_price_meta_boxes() {
 }
 add_action('add_meta_boxes', 'cpp_add_price_meta_boxes');
 
-// Meta box callback function to render the fields
+// Meta box callback function to render the fields for prices
 function cpp_render_pricing_meta_box($post) {
     $hourly_price = get_post_meta($post->ID, '_cpp_hourly_price', true);
     $daily_price = get_post_meta($post->ID, '_cpp_daily_price', true);
@@ -47,7 +60,7 @@ function cpp_render_pricing_meta_box($post) {
     <?php
 }
 
-// Save custom fields
+// Save custom fields for prices
 function cpp_save_pricing_meta_box($post_id) {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (!isset($_POST['cpp_hourly_price']) || !isset($_POST['cpp_daily_price']) || !isset($_POST['cpp_weekly_price'])) return;
@@ -89,7 +102,7 @@ function cpp_display_prices_shortcode($atts) {
 add_shortcode('cpp_display_prices', 'cpp_display_prices_shortcode');
 
 
-// shortcode for frontend input form
+// shortcode for frontend input form for prices
 function cpp_frontend_input_shortcode($atts) {
     if (!is_user_logged_in()) return '<p>You need to be logged in to update pricing.</p>';
 
@@ -135,6 +148,7 @@ function cpp_frontend_input_shortcode($atts) {
 
 add_shortcode('cpp_frontend_input', 'cpp_frontend_input_shortcode');
 
+// Create custom page for number plates
 function create_custom_page_for_plates() {
     $page_title = 'Number Plates';
     $page_content = '[cpp_frontend_number_plates_input]';
@@ -157,6 +171,7 @@ function create_custom_page_for_plates() {
 
 add_action('init', 'create_custom_page_for_plates');
 
+// Frontend form for number plates
 function cpp_frontend_number_plates_input_shortcode() {
     // If the user is not logged in, return a message and stop any further output
     if (!is_user_logged_in()) {
@@ -165,6 +180,25 @@ function cpp_frontend_number_plates_input_shortcode() {
 
     // Initialize feedback
     $form_feedback = '';
+    $post = null;
+
+    // check if the query parameter is for editing post
+    if (isset($_GET['plate_id']) && isset($_GET['action']) && $_GET['action'] === 'continue') {
+        $post_id = intval($_GET['plate_id']);
+        $user_id = get_current_user_id();
+
+        $post = get_post($post_id);
+
+        if ($post) {
+            if ($post->post_author == $user_id && current_user_can('edit_post', $post_id)) {
+                
+            }  else {
+                echo 'You are not the author of this post.';
+            }
+        } else {
+            echo 'No post found with the given ID.';
+        }
+    }  
 
     // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpp_number_plates_nonce']) && wp_verify_nonce($_POST['cpp_number_plates_nonce'], 'cpp_number_plates')) {
@@ -177,23 +211,46 @@ function cpp_frontend_number_plates_input_shortcode() {
             $form_feedback = '<p style="color: red;">Title and a valid positive price are required!</p>';
         }
 
-        // Insert the data into the table
-        $new_plate_id = wp_insert_post(array(
-            'post_title' => $plate_title,
-            'post_content' => $plate_description,
-            'post_type' => 'number_plates',
-            'post_status' => 'publish',
-            'meta_input' => array(
-                'cpp_price' => $plate_price,
-                'cpp_location' => $plate_location,
-            )
-        ));
+        if (isset($_POST['cpp_post_id']) && intval($_POST['cpp_post_id']) > 0) {
+            $post_id = intval($_POST['cpp_post_id']);
+            $post = get_post($post_id);
 
-        // Provide feedback based on whether the insertion was successful
-        if ($new_plate_id) {
-            $form_feedback = '<p style="color: green;">Number plate added successfully!</p>';
+            if ($post && $post->post_author == get_current_user_id() && current_user_can('edit_post', $post_id)) {
+                $updated_post_id = wp_update_post(array(
+                    'ID' => $post_id,
+                    'post_title' => $plate_title,
+                    'post_content' => $plate_description
+                ));
+
+                if ($updated_post_id) {
+                    update_post_meta($post_id, 'cpp_price', $plate_price);
+                    update_post_meta($post_id, 'cpp_location', $plate_location);
+                    $form_feedback = '<p style="color: green;">Number plate updated successfully!</p>';
+                } else {
+                    $form_feedback = '<p style="color: red;">Failed to update number plate. Please try again later.</p>';
+                }
+            } else {
+                $form_feedback = '<p style="color: red;"> You do not have permission to edit this post.';
+            }
         } else {
-            $form_feedback = '<p style="color: red;">Failed to add number plate. Please try again later.</p>';
+            // Insert the data into the table
+            $new_plate_id = wp_insert_post(array(
+                'post_title' => $plate_title,
+                'post_content' => $plate_description,
+                'post_type' => 'plates_lists',
+                'post_status' => 'publish',
+                'meta_input' => array(
+                    'cpp_price' => $plate_price,
+                    'cpp_location' => $plate_location,
+                )
+            ));
+
+            // Provide feedback based on whether the insertion was successful
+            if ($new_plate_id) {
+                $form_feedback = '<p style="color: green;">Number plate added successfully!</p>';
+            } else {
+                $form_feedback = '<p style="color: red;">Failed to add number plate. Please try again later.</p>';
+            }
         }
     }
 
@@ -206,6 +263,8 @@ function cpp_frontend_number_plates_input_shortcode() {
     <form action="" method="post" id="cpp_number_plates_form" class="cmb-form">
 
         <?php wp_nonce_field('cpp_number_plates', 'cpp_number_plates_nonce'); ?>
+
+        <input type="hidden" name="cpp_post_id" value="<?= isset($post->ID) ? esc_attr($post->ID) : ''; ?>">
 
         <div class="cmb2-wrap form-table">
             <div class="cmb2-metabox cmb-field-list">
@@ -221,7 +280,7 @@ function cpp_frontend_number_plates_input_shortcode() {
                             <label for="cpp_plate_title">Title: <span class="required">(required)</span></label>
                         </div>
                         <div class="cmb-td">
-                            <input type="text" name="cpp_plate_title" id="cpp_plate_title" value="" required>
+                            <input type="text" name="cpp_plate_title" id="cpp_plate_title" value="<?= isset($post->post_title) ? esc_attr($post->post_title) : ''; ?>" required>
                         </div>
                     </div>
 
@@ -230,7 +289,9 @@ function cpp_frontend_number_plates_input_shortcode() {
                             <label for="cpp_plate_description">Description:</label>
                         </div>
                         <div class="cmb-td">
-                            <textarea name="cpp_plate_description" id="cpp_plate_description"></textarea>
+                            <textarea name="cpp_plate_description" id="cpp_plate_description">
+                                <?= isset($post->post_content) ? esc_textarea($post->post_content) : ''; ?>
+                            </textarea>
                         </div>
                     </div>
 
@@ -239,7 +300,7 @@ function cpp_frontend_number_plates_input_shortcode() {
                             <label for="cpp_plate_price">Price: <span class="required">(required)</span></label>
                         </div>
                         <div class="cmb-td">
-                            <input type="number" min=0 name="cpp_plate_price" id="cpp_plate_price" value="" required>
+                            <input type="number" min=0 name="cpp_plate_price" id="cpp_plate_price" value="<?= isset($post) ? esc_attr(get_post_meta($post->ID, 'cpp_price', true)) : ''; ?>" required>
                         </div>
                     </div>
 
@@ -248,7 +309,7 @@ function cpp_frontend_number_plates_input_shortcode() {
                             <label for="cpp_plate_location">Location:</label>
                         </div>
                         <div class="cmb-td">
-                            <input type="text" name="cpp_plate_location" id="cpp_plate_location" value="">
+                            <input type="text" name="cpp_plate_location" id="cpp_plate_location" value="<?= isset($post) ? esc_attr(get_post_meta($post->ID, 'cpp_location', true)) : ''; ?>">
                         </div>
                     </div>
                 </div>
@@ -401,7 +462,7 @@ function cpp_display_number_plates_list_shortcode() {
 							0							
                         </div>
 						<div class="warpper-action-listing">
-							<a data-toggle="tooltip" href="" class="edit-btn btn-action-icon edit  job-table-action" title="" data-bs-original-title="Continue">
+							<a data-toggle="tooltip" href="/number-plates/?plate_id=<?= get_the_ID() ?>&action=continue" class="edit-btn btn-action-icon edit  job-table-action" title="" data-bs-original-title="Continue">
 								<i class="ti-arrow-top-right"></i>
 							</a>
 										
@@ -452,7 +513,7 @@ function cpp_register_number_plates_cpt() {
         'labels'       => $labels,
         'public'       => true,
         'has_archive'  => true,
-        'rewrite'      => array('slug' => 'number-plates'),
+        'rewrite'      => array('slug' => 'plates-lists'),
         'supports'     => array('title', 'editor', 'thumbnail'),
         'taxonomies'   => array('category', 'post_tag'),
         'show_in_rest' =>true
