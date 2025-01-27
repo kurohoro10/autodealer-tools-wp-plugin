@@ -15,10 +15,10 @@ function cpp_enqueue_scripts() {
 
     wp_enqueue_style('cpp_custom_style', plugins_url('/style.css', __FILE__));
 
-    wp_localize_script('cpp_custom_script', 'cpp_script_data', array(
+    wp_localize_script('cpp_custom_script', 'cpp_script_data', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('cpp_nonce')
-    ));
+        'nonce'   => wp_create_nonce('cpp_nonce'),
+    ]);
 }
 
 add_action('wp_enqueue_scripts', 'cpp_enqueue_scripts');
@@ -122,26 +122,22 @@ function cpp_frontend_input_shortcode($atts) {
 
     ob_start();
     ?>
-        <!-- <form action="" method="post"> -->
-            <?php //wp_nonce_field('cpp_update_pricing', 'cpp_update_pricing_nonce'); ?>
 
-            <div>
-                <label for="cpp_hourly_price">Hourly Price:</label>
-                <input type="number" step="0.01" name="cpp_hourly_price" id="cpp_hourly_price" value="<?= esc_attr($hourly_price); ?>">
-            </div>
+    <div>
+        <label for="cpp_hourly_price">Hourly Price:</label>
+        <input type="number" step="0.01" name="cpp_hourly_price" id="cpp_hourly_price" value="<?= esc_attr($hourly_price); ?>">
+    </div>
 
-            <div>
-                <label for="cpp_daily_price">Daily Price:</label>
-                <input type="number" step="0.01" name="cpp_daily_price" id="cpp_daily_price" value="<?= esc_attr($daily_price); ?>">
-            </div>
+    <div>
+        <label for="cpp_daily_price">Daily Price:</label>
+        <input type="number" step="0.01" name="cpp_daily_price" id="cpp_daily_price" value="<?= esc_attr($daily_price); ?>">
+    </div>
 
-            <div>
-                <label for="cpp_weekly_price">Weekly Price:</label>
-                <input type="number" step="0.01" name="cpp_weekly_price" id="cpp_weekly_price" value="<?= esc_attr($weekly_price); ?>">
-            </div>
+    <div>
+        <label for="cpp_weekly_price">Weekly Price:</label>
+        <input type="number" step="0.01" name="cpp_weekly_price" id="cpp_weekly_price" value="<?= esc_attr($weekly_price); ?>">
+    </div>
 
-            <!-- <div><button type="submit" name="submit-cmb-listing" value="Save &amp; Preview" class="btn btn-theme">Save &amp; Preview</button></div>
-        </form> -->
     <?php
     return ob_get_clean();
 }
@@ -198,7 +194,7 @@ function cpp_frontend_number_plates_input_shortcode() {
         } else {
             echo 'No post found with the given ID.';
         }
-    }  
+    }
 
     // Handle form submission
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cpp_number_plates_nonce']) && wp_verify_nonce($_POST['cpp_number_plates_nonce'], 'cpp_number_plates')) {
@@ -237,7 +233,7 @@ function cpp_frontend_number_plates_input_shortcode() {
             $new_plate_id = wp_insert_post(array(
                 'post_title' => $plate_title,
                 'post_content' => $plate_description,
-                'post_type' => 'plates_lists',
+                'post_type' => 'number_plates',
                 'post_status' => 'publish',
                 'meta_input' => array(
                     'cpp_price' => $plate_price,
@@ -334,6 +330,25 @@ function cpp_display_number_plates_list_shortcode() {
         return '<p>You need to be logged in to view number plates lists.</p>';
     }
 
+    $delete_nonce = wp_create_nonce('delete_number_plate_nonce');
+
+    if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['plate_id']) && isset($_GET['delete_nonce'])) {
+        $plate_id =intval($_GET['plate_id']);
+        $nonce = $_GET['delete_nonce'];
+
+        if (get_post_type($plate_id) !== 'number_plates') {
+            return;
+        }
+
+        if (!wp_verify_nonce($nonce, 'delete_number_plate_nonce')) {
+            return;
+        }
+
+        wp_delete_post($plate_id, true);
+        wp_redirect(remove_query_arg(['action', 'plate_id', 'delete_nonce']));
+        exit;
+    }
+
     $current_user_id = get_current_user_id();
     
     $args = array(
@@ -346,9 +361,9 @@ function cpp_display_number_plates_list_shortcode() {
 
     $query = new WP_Query($args);
 
-    if (!$query->have_posts()) {
-        return '<p>No number plates found.</p>';
-    }
+    $encoded = json_encode($query);
+
+    wp_localize_script('cpp_custom_script', 'cpp_script_data', ['query' => $encoded]);
 
     ob_start();
     ?>
@@ -415,7 +430,13 @@ function cpp_display_number_plates_list_shortcode() {
 
                 <!-- Inner item -->
 
-                <?php while ($query->have_posts()) : $query->the_post(); ?>
+                <?php if (!$query->have_posts()) : ?>
+
+                <div class="alert alert-warning">
+                    <p>You don't have any plates yet. Start by adding a new one.</p>
+                </div>
+
+                <?php else: while ($query->have_posts()) : $query->the_post(); ?>
                     
                 <div class="my-listings-item listing-item">
 					<div class="d-flex align-items-center layout-my-listings">
@@ -431,7 +452,7 @@ function cpp_display_number_plates_list_shortcode() {
 							<div class="inner-info-left">
 								<h3 class="listing-title">
                                     <a href="<?php the_permalink(); ?>">
-                                        <?php the_title(); ?>
+                                        <?php esc_html(the_title()); ?>
                                     </a>
                                 </h3>
 								<div class="listing-meta with-icon tagline">
@@ -442,7 +463,7 @@ function cpp_display_number_plates_list_shortcode() {
                                 <div class="main-price">
                                     <span class="suffix">RM</span> 
                                     <span class="price-text">
-                                        <?= get_post_meta(get_the_ID(), 'cpp_price', true); ?>
+                                        <?= esc_html(get_post_meta(get_the_ID(), 'cpp_price', true)); ?>
                                     </span>
                                 </div>
                             </div>							
@@ -462,11 +483,11 @@ function cpp_display_number_plates_list_shortcode() {
 							0							
                         </div>
 						<div class="warpper-action-listing">
-							<a data-toggle="tooltip" href="/number-plates/?plate_id=<?= get_the_ID() ?>&action=continue" class="edit-btn btn-action-icon edit  job-table-action" title="" data-bs-original-title="Continue">
+							<a data-toggle="tooltip" href="/number-plates/?plate_id=<?= esc_html(get_the_ID()) ?>&action=continue" class="edit-btn btn-action-icon edit  job-table-action" title="" data-bs-original-title="Continue">
 								<i class="ti-arrow-top-right"></i>
 							</a>
 										
-							<a data-toggle="tooltip" class="remove-btn btn-action-icon listing-table-action listing-button-delete" href="javascript:void(0)" data-listing_id="<?= get_the_ID() ?>" data-nonce="9cabffcf30" title="" data-bs-original-title="Remove">
+							<a data-toggle="tooltip" class="remove-btn btn-action-icon number-plate-table-action number-plate-button-delete" href="javascript:void(0)" data-number_plate_id="<?= esc_html(get_the_ID()) ?>" data-nonce="<?=  esc_attr($delete_nonce); ?>" title="" data-bs-original-title="Remove">
 								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M7.06907 7.69027C7.37819 7.65937 7.65382 7.8849 7.68472 8.19405L8.05972 11.944C8.0907 12.2531 7.8651 12.5288 7.55602 12.5597C7.2469 12.5906 6.97124 12.3651 6.94033 12.0559L6.56533 8.30595C6.53442 7.99687 6.75995 7.72117 7.06907 7.69027Z" fill="currentColor"></path>
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M10.931 7.69027C11.2401 7.72117 11.4656 7.99687 11.4347 8.30595L11.0597 12.0559C11.0288 12.3651 10.7532 12.5906 10.444 12.5597C10.135 12.5288 9.90943 12.2531 9.94033 11.944L10.3153 8.19405C10.3462 7.8849 10.6219 7.65937 10.931 7.69027Z" fill="currentColor"></path>
@@ -474,12 +495,13 @@ function cpp_display_number_plates_list_shortcode() {
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M3.83761 5.81377C4.14757 5.7931 4.41561 6.02763 4.43628 6.3376L4.78123 11.5119C4.84862 12.5228 4.89664 13.2262 5.00207 13.7554C5.10433 14.2688 5.24708 14.5405 5.45215 14.7323C5.6572 14.9241 5.93782 15.0485 6.45682 15.1164C6.99187 15.1864 7.6969 15.1875 8.71 15.1875H9.29004C10.3031 15.1875 11.0081 15.1864 11.5432 15.1164C12.0622 15.0485 12.3428 14.9241 12.5479 14.7323C12.7529 14.5405 12.8957 14.2688 12.998 13.7554C13.1034 13.2262 13.1514 12.5228 13.2188 11.5119L13.5638 6.3376C13.5844 6.02763 13.8524 5.7931 14.1624 5.81377C14.4724 5.83443 14.7069 6.10246 14.6863 6.41244L14.3387 11.6262C14.2745 12.5883 14.2228 13.3654 14.1013 13.9752C13.975 14.6092 13.7602 15.1388 13.3165 15.5538C12.8728 15.9689 12.3301 16.148 11.6891 16.2319C11.0726 16.3125 10.2938 16.3125 9.32957 16.3125H8.67047C7.70627 16.3125 6.92743 16.3125 6.3109 16.2319C5.66991 16.148 5.12725 15.9689 4.68356 15.5538C4.23986 15.1388 4.02505 14.6092 3.89875 13.9752C3.77727 13.3654 3.72547 12.5883 3.66136 11.6262L3.31377 6.41244C3.2931 6.10246 3.52763 5.83443 3.83761 5.81377Z" fill="currentColor"></path>
                                 </svg>
 							</a>
+                            <div class="loader"></div>
 						</div>
 						</div>
 					</div>
 				</div>
 
-                <?php endwhile; ?>
+                <?php endwhile; endif; ?>
 
             </div>
     </div>
@@ -564,7 +586,7 @@ function cpp_add_meta_boxes() {
 
 add_action('add_meta_boxes', 'cpp_add_meta_boxes');
 
-// meta box callback for price
+// meta box callback for number plates price
 function cpp_price_meta_box_callback($post) {
     $value = get_post_meta($post->ID, 'cpp_price', true);
     wp_nonce_field('cpp_np_save_meta', 'cpp_np_meta_nonce');
@@ -572,7 +594,7 @@ function cpp_price_meta_box_callback($post) {
     echo '<input type="text" id="cpp_price" name="cpp_price" value="' . esc_html($value) . '" style="width: 100%;" />';
 }
 
-// meta box callback for location
+// meta box callback for number plates location
 function cpp_location_meta_box_callback($post) {
     $value = get_post_meta($post->ID, 'cpp_location', true);
     wp_nonce_field('cpp_np_save_meta', 'cpp_np_meta_nonce');
@@ -580,7 +602,7 @@ function cpp_location_meta_box_callback($post) {
     echo '<input type="text" id="cpp_location" name="cpp_location" value="' . esc_html($value) . '" style="width: 100%;" />';
 }
 
-// Saved meta box data
+// Saved meta box data for number plates
 function cpp_save_meta_box_data($post_id) {
     if (!isset($_POST['cpp_np_meta_nonce']) || !wp_verify_nonce($_POST['cpp_np_meta_nonce'], 'cpp_np_save_meta')) {
         return;
