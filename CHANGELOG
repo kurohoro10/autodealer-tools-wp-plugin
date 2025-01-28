@@ -1,3 +1,10 @@
+==Version 2.2.3==
+-Fixed display result and refreshing table after delete.
+
+==Version 2.2.2==
+-Fixed delete button not working due to nonce mismatch.
+-Fixed dealer dashboard can't add number plates.
+
 ==Version 2.2.1==
 -Changed number plates form from directly inserting data to database to inserting it as a post in custom post type called number plates.
 
