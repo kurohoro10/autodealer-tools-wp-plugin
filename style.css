@@ -4,4 +4,44 @@ Description: A child theme for the Boxcar theme.
 Template: boxcar
 Version: 1.0.0
 */
+.d_flex {
+    display: flex;
+    align-items: center;
+}
 
+.gap_x1 {
+    gap: 1rem;
+}
+
+.cpp_preview {
+    display: block;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 400px;
+}
+
+.remove_btn_preview {
+    position: absolute;
+    left: 40%;
+    top: 40%;
+    z-index: -1;
+    opacity: 0;
+    visibility: hidden;
+    transition: all ease-in-out 0.3s;
+}
+
+.cpp_preview img {
+    transition: all ease-in-out 0.3s;
+}
+
+.cpp_preview:hover .remove_btn_preview {
+    z-index: 2;
+    opacity: 1;
+    visibility: visible;
+}
+
+.cpp_preview:hover img {
+    filter: opacity(0.5);
+}

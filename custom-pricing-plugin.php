@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.2.3
+ * Version: 2.2.4
  */
 
 //  Exit if accessed directly
@@ -175,6 +175,7 @@ function cpp_frontend_number_plates_input_shortcode() {
     }
 
     // Initialize feedback
+    $plate_featured_img = '';
     $form_feedback = '';
     $post = null;
 
@@ -203,6 +204,41 @@ function cpp_frontend_number_plates_input_shortcode() {
         $plate_price = isset($_POST['cpp_plate_price']) ? floatval($_POST['cpp_plate_price']) : 0;
         $plate_location = isset($_POST['cpp_plate_location']) ? sanitize_text_field($_POST['cpp_plate_location']) : '';
 
+        if (!empty($_FILES['featured_image']['name'])) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+            require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+            $uploaded_file = wp_handle_upload($_FILES['featured_image'], array('test_form' => false));
+
+            if ($uploaded_file && !isset($uploaded_file['error'])) {
+                $filename = $uploaded_file['file'];
+                $wp_upload_dir = wp_upload_dir();
+
+                $attachment = array(
+                    'guid' => $wp_upload_dir['url'] . '/' . basename($filename),
+                    'post_mime_type' => $uploaded_file['type'],
+                    'post_title' => sanitize_file_name(basename($filename)),
+                    'post_content' => '',
+                    'post_status' => 'inherit'
+                );
+
+                $attachment_id = wp_insert_attachment($attachment, $filename);
+
+                if (!is_wp_error($attachment_id)) {
+                    $attachment_data = wp_generate_attachment_metadata($attachment_id, $filename);
+                    wp_update_attachment_metadata($attachment_id, $attachment_data);
+
+                    // set_post_thumbnail($new_plate_id, $attachment_id);
+
+                    $plate_featured_img = wp_get_attachment_url($attachment_id);
+                } else {
+                    $form_feedback = '<p style="color: red;">Failed to save featured image.</p>';
+                }
+            } else {
+                $form_feedback = '<p style="color: red;">File upload error: ' . $uploaded_file['error'] . '</p>';
+            }
+        }
+
         if (empty($plate_title) || $plate_price <= 0 || !is_numeric($plate_price)) {
             $form_feedback = '<p style="color: red;">Title and a valid positive price are required!</p>';
         }
@@ -215,12 +251,17 @@ function cpp_frontend_number_plates_input_shortcode() {
                 $updated_post_id = wp_update_post(array(
                     'ID' => $post_id,
                     'post_title' => $plate_title,
-                    'post_content' => $plate_description
+                    'post_content' => $plate_description,
                 ));
 
                 if ($updated_post_id) {
                     update_post_meta($post_id, 'cpp_price', $plate_price);
                     update_post_meta($post_id, 'cpp_location', $plate_location);
+
+                    if (!empty($plate_featured_img)) {
+                        set_post_thumbnail($post_id, $attachment_id);
+                    } 
+
                     $form_feedback = '<p style="color: green;">Number plate updated successfully!</p>';
                 } else {
                     $form_feedback = '<p style="color: red;">Failed to update number plate. Please try again later.</p>';
@@ -229,7 +270,7 @@ function cpp_frontend_number_plates_input_shortcode() {
                 $form_feedback = '<p style="color: red;"> You do not have permission to edit this post.';
             }
         } else {
-            // Insert the data into the table
+            // Insert the data into post
             $new_plate_id = wp_insert_post(array(
                 'post_title' => $plate_title,
                 'post_content' => $plate_description,
@@ -243,6 +284,9 @@ function cpp_frontend_number_plates_input_shortcode() {
 
             // Provide feedback based on whether the insertion was successful
             if ($new_plate_id) {
+                if (!empty($plate_featured_img)) {
+                    set_post_thumbnail($new_plate_id, $attachment_id);
+                }
                 $form_feedback = '<p style="color: green;">Number plate added successfully!</p>';
             } else {
                 $form_feedback = '<p style="color: red;">Failed to add number plate. Please try again later.</p>';
@@ -256,7 +300,7 @@ function cpp_frontend_number_plates_input_shortcode() {
     echo $form_feedback;
     ?>
 
-    <form action="" method="post" id="cpp_number_plates_form" class="cmb-form">
+    <form action="" method="post" id="cpp_number_plates_form" class="cmb-form" enctype="multipart/form-data">
 
         <?php wp_nonce_field('cpp_number_plates', 'cpp_number_plates_nonce'); ?>
 
@@ -308,6 +352,37 @@ function cpp_frontend_number_plates_input_shortcode() {
                             <input type="text" name="cpp_plate_location" id="cpp_plate_location" value="<?= isset($post) ? esc_attr(get_post_meta($post->ID, 'cpp_location', true)) : ''; ?>">
                         </div>
                     </div>
+
+                    <div class="cmb-row cmb-type-wp-cardealer-file cmb2-id--listing-featured-image" data-fieldtype="wp_cardealer_file">
+                        <div class="cmb-th">
+                            Featured Image 
+                            <span class="required"> (required)</span>
+                        </div>
+                        
+                        <div class="cmb-td d_flex gap_x1">
+                        <div class="wp-cardealer-uploaded-file">			
+                            <span class="wp-cardealer-uploaded-file-preview cpp_preview">
+                                <?php  if (!empty(get_the_post_thumbnail_url($post->ID))) :?>
+                                    <img id="image_preview"
+                                        src="<?= esc_attr(get_the_post_thumbnail_url($post->ID)); ?>" 
+                                        alt="<?= esc_attr(get_the_title($post->ID)); ?>"
+                                    >
+                                    <a class="wp-cardealer-remove-uploaded-file remove_btn_preview" href="#">[remove]</a>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+
+                            <input type="file" id="featured_image" class="hidden wp-cardealer-file-upload" accept="image/gif, image/jpeg, image/png, image/bmp, image/tiff, image/webp, image/avif, image/x-icon, image/heic" name="featured_image" data-file_limit="1" />
+
+                            <div class="label-can-drag">
+                                <div class="form-group group-upload">
+                                    <div class="upload-file-btn">
+                                        <span>Upload File</span>                   
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -323,6 +398,7 @@ function cpp_frontend_number_plates_input_shortcode() {
 
 add_shortcode('cpp_frontend_number_plates_input', 'cpp_frontend_number_plates_input_shortcode');
 
+// Display number plates list in listing page.
 function cpp_display_number_plates_list_shortcode() {
     ob_start();
     ?>
@@ -388,7 +464,7 @@ function cpp_display_number_plates_list_shortcode() {
             </div>
 
             <!-- Inner item -->
-            <div class="my-listings-item listing-item">
+            <div class="number_plates_listing">
                 <p class="loading">Loading number plates please wait ...</p>
             </div>
         </div>

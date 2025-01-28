@@ -1,3 +1,8 @@
+==Version 2.2.4==
+-Added preview of featured image to number plates form.
+-Added image thumbnail to number plates list in listing page.
+-Currently cannot remove featured image in form.
+
 ==Version 2.2.3==
 -Fixed display result and refreshing table after delete.
 
