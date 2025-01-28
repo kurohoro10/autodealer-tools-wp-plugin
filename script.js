@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="d-flex align-items-center layout-my-listings">
                     <div class="listing-thumbnail-wrapper d-none d-md-block">
-                        <img src="${plate.thumbnail}" alt="${plate.title}" />
+                        ${check_img_path(plate)}
                         <div class="top-label"></div>
                     </div>
                     <div class="inner-info flex-grow-1 d-flex align-items-center layout-left">
@@ -189,5 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         div.appendChild(inner_div);
         document.body.appendChild(div);
+    };
+
+    const check_img_path = (path) => {
+        if (path && path.thumbnail && path.title) {
+            return `<img src="${path.thumbnail}" alt="${path.title}" />`;
+        } else {
+            return '';
+        }
     };
 });
