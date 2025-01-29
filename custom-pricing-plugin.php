@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.2.4
+ * Version: 2.2.5
  */
 
 //  Exit if accessed directly
@@ -228,8 +228,6 @@ function cpp_frontend_number_plates_input_shortcode() {
                     $attachment_data = wp_generate_attachment_metadata($attachment_id, $filename);
                     wp_update_attachment_metadata($attachment_id, $attachment_data);
 
-                    // set_post_thumbnail($new_plate_id, $attachment_id);
-
                     $plate_featured_img = wp_get_attachment_url($attachment_id);
                 } else {
                     $form_feedback = '<p style="color: red;">Failed to save featured image.</p>';
@@ -260,7 +258,13 @@ function cpp_frontend_number_plates_input_shortcode() {
 
                     if (!empty($plate_featured_img)) {
                         set_post_thumbnail($post_id, $attachment_id);
-                    } 
+                    } else if (empty($plate_featured_img)) {
+                        delete_post_thumbnail($post_id);
+                    }
+
+                    if (isset($_POST['remove_featured_image']) && $_POST['remove_featured_image'] === '1') {
+                        delete_post_thumbnail($post_id);
+                    }
 
                     $form_feedback = '<p style="color: green;">Number plate updated successfully!</p>';
                 } else {
@@ -372,6 +376,8 @@ function cpp_frontend_number_plates_input_shortcode() {
                             </span>
                         </div>
 
+                            <input type="hidden" name="remove_featured_image" id="remove_featured_image" value="0">
+                        
                             <input type="file" id="featured_image" class="hidden wp-cardealer-file-upload" accept="image/gif, image/jpeg, image/png, image/bmp, image/tiff, image/webp, image/avif, image/x-icon, image/heic" name="featured_image" data-file_limit="1" />
 
                             <div class="label-can-drag">

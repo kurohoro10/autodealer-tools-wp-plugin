@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             img.remove();
             featured_img.value = null;
+            document.getElementById('remove_featured_image').value = "1";
         }); 
     }
 
@@ -53,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             existing_img.remove();
             featured_img.value = null;
+            document.getElementById('remove_featured_image').value = "1";
         }); 
     }
 
@@ -242,29 +244,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Fetch all the list of number plates for current user
-    const get_number_list = () => {
-        fetch(`${cpp_script_data.ajaxUrl}?action=get_number_plates`, {
-            method: 'GET',
-            headers: {
-                'X-WP-Nonce' : cpp_script_data.nonce,
+    const get_number_list = async () => {
+        try {
+            const response = await fetch(`${cpp_script_data.ajaxUrl}?action=get_number_plates`, {
+                method: 'GET',
+                headers: {
+                    'X-WP-Nonce': cpp_script_data.nonce
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        })
-        .then(response => response.json())
-        .then(data => {
+
+            const data = await response.json();
+
             if (data.success) {
                 renderNumberPlates(data.data);
             } else {
-                container.innerHTML = `<div class="alert alert-warning">
+                container.innerHTML = ` <div class="alert alert-warning">
                                             <p>${data.data.message}.</p>
                                         </div>`;
             }
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Error fetching number plates: ', error);
-            container.innerHTML = `<div class="alert alert-warning">
+            container.innerHTML = ` <div class="alert alert-warning">
                                         <p>Failed to load number plates. Please try again later.</p>
                                     </div>`;
-        });
+        }
     };
 
     get_number_list();
