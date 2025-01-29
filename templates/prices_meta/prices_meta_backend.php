@@ -1,3 +1,6 @@
+<?php
+    // Template in backend for prices input
+?>
 <div>
     <div style="display: flex;gap: 2rem;width: 100%;align-items: center; padding: 1rem 0;">
         <div style="width: 100px;">

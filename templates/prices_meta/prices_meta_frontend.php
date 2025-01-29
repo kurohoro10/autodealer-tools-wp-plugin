@@ -1,3 +1,7 @@
+<?php
+    // Template for frontend input for prices
+?>
+
 <div>
     <label for="cpp_hourly_price">Hourly Price:</label>
     <input type="number" step="0.01" name="cpp_hourly_price" id="cpp_hourly_price" value="<?= esc_attr($hourly_price); ?>">
