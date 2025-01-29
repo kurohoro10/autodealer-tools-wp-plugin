@@ -1,3 +1,11 @@
+*Custom Pricing Plugin*
+==Version 2.2.7==
+-Separate templates in functions.
+
+==Version 2.2.6==
+-Organize file structure.
+-Separate number plates to prices meta.
+
 ==Version 2.2.5==
 -Fixed Removing featured image on form update.
 

@@ -18,36 +18,9 @@ function cpp_render_pricing_meta_box($post) {
     $daily_price = get_post_meta($post->ID, '_cpp_daily_price', true);
     $weekly_price = get_post_meta($post->ID, '_cpp_weekly_price', true);
 
-    ?>
-    <div>
-        <div style="display: flex;gap: 2rem;width: 100%;align-items: center; padding: 1rem 0;">
-            <div style="width: 100px;">
-                <label for="cpp_hourly_price">Hourly Price:</label>
-            </div>
-            <div style="flex-grow: 1;">
-                <input type="number" step="0.01" name="cpp_hourly_price" id="cpp_hourly_price" value="<?= esc_attr($hourly_price); ?>" style="width: 80%;">
-            </div>
-        </div>
-
-        <div style="display: flex;gap: 2rem;width: 100%;align-items: center; padding-bottom: 1rem">
-            <div style="width: 100px;">
-                <label for="cpp_daily_price">Daily Price:</label>
-            </div>
-            <div style="flex-grow: 1;">
-                <input type="number" step="0.01" name="cpp_daily_price" id="cpp_daily_price" value="<?= esc_attr($daily_price); ?>" style="width: 80%;">
-            </div>
-        </div>
-
-        <div style="display: flex;gap: 2rem;width: 100%;align-items: center; padding-bottom: 1rem">
-            <div style="width: 100px;">
-                <label for="cpp_weekly_price">Weekly Price:</label>
-            </div>
-            <div style="flex-grow: 1;">
-                <input type="number" step="0.01" name="cpp_weekly_price" id="cpp_weekly_price" value="<?= esc_attr($weekly_price); ?>" style="width: 80%;">
-            </div>
-        </div>
-    </div>
-    <?php
+    if (file_exists(CPP_PLUGIN_TEMPLATES_PATH . 'prices_meta/prices_meta_backend.php')) {
+        include_once CPP_PLUGIN_TEMPLATES_PATH . 'prices_meta/prices_meta_backend.php';
+    }
 }
 
 // Save custom fields for prices
@@ -79,13 +52,11 @@ function cpp_display_prices_shortcode($atts) {
     $price_per_week = $weekly_price !== 'N/A' ? 'RM ' . $weekly_price : $weekly_price;
 
     ob_start();
-    ?>
-        <div class="cpp-prices">
-            <div><strong>Per Hour:</strong> <?= esc_html($price_per_hour); ?> </div>
-            <div><strong>Per Day:</strong> <?= esc_html($price_per_day); ?> </div>
-            <div><strong>Per Week:</strong> <?= esc_html($price_per_week); ?> </div>
-        </div>
-    <?php
+    
+    if (file_exists(CPP_PLUGIN_TEMPLATES_PATH . 'prices_meta/display_prices_meta.php')) {
+        include_once CPP_PLUGIN_TEMPLATES_PATH . 'prices_meta/display_prices_meta.php';
+    }
+
     return ob_get_clean();
 }
 
@@ -110,24 +81,11 @@ function cpp_frontend_input_shortcode($atts) {
     $weekly_price = get_post_meta($atts['id'], '_cpp_weekly_price', true);
 
     ob_start();
-    ?>
+    
+    if (file_exists(CPP_PLUGIN_TEMPLATES_PATH . 'prices_meta/prices_meta_frontend.php')) {
+        include_once CPP_PLUGIN_TEMPLATES_PATH . 'prices_meta/prices_meta_frontend.php';
+    }
 
-    <div>
-        <label for="cpp_hourly_price">Hourly Price:</label>
-        <input type="number" step="0.01" name="cpp_hourly_price" id="cpp_hourly_price" value="<?= esc_attr($hourly_price); ?>">
-    </div>
-
-    <div>
-        <label for="cpp_daily_price">Daily Price:</label>
-        <input type="number" step="0.01" name="cpp_daily_price" id="cpp_daily_price" value="<?= esc_attr($daily_price); ?>">
-    </div>
-
-    <div>
-        <label for="cpp_weekly_price">Weekly Price:</label>
-        <input type="number" step="0.01" name="cpp_weekly_price" id="cpp_weekly_price" value="<?= esc_attr($weekly_price); ?>">
-    </div>
-
-    <?php
     return ob_get_clean();
 }
 

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.2.5
+ * Version: 2.2.7
  */
 
 //  Exit if accessed directly
@@ -14,7 +14,7 @@ define('CPP_FILE', __FILE__);
 define('CPP_PLUGIN_BASE', plugin_basename(CPP_FILE));
 define('CPP_PLUGIN_PATH', plugin_dir_path(CPP_FILE));
 define('CPP_PLUGIN_ASSETS_PATH', CPP_PLUGIN_PATH . 'assets/');
-define('CPP_PLUGIN_TEMPLATES_PATH', CPP_PLUGIN_PATH . 'modules/');
+define('CPP_PLUGIN_TEMPLATES_PATH', CPP_PLUGIN_PATH . 'templates/');
 define('CPP_PLUGIN_BASE_PATH', CPP_PLUGIN_PATH . 'base/');
 define('CPP_PLUGIN_INCLUDES_PATH', CPP_PLUGIN_PATH . 'includes/');
 define('CPP_PLUGIN_URL', plugins_url('/', CPP_FILE));
@@ -34,8 +34,8 @@ function cpp_enqueue_scripts() {
 
 add_action('wp_enqueue_scripts', 'cpp_enqueue_scripts');
 
-if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'prices/price_meta.php')) {
-    require_once CPP_PLUGIN_INCLUDES_PATH . 'prices/price_meta.php';
+if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php')) {
+    require_once CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php';
 }
 
 if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'number_plates/number_plates.php')) {
