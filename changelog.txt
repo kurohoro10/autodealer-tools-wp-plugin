@@ -8,7 +8,7 @@
 
 ==Version 2.2.3==
 -Fixed display result and refreshing table after delete.
-
+* Custom Pricing Plugin
 ==Version 2.2.2==
 -Fixed delete button not working due to nonce mismatch.
 -Fixed dealer dashboard can't add number plates.
