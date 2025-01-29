@@ -1,6 +1,9 @@
 *Custom Pricing Plugin*
 
 ==Version 2.2.8==
+-Separate shortcodes with other functions.
+
+==Version 2.2.8==
 -Add information about templates.
 
 ==Version 2.2.7==

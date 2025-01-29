@@ -21,6 +21,7 @@ define('CPP_PLUGIN_URL', plugins_url('/', CPP_FILE));
 define('CPP_PLUGIN_ASSETS_URL', CPP_PLUGIN_URL . 'assets/');
 define('CPP_PLUGIN_TEMPLATES_URL', CPP_PLUGIN_URL . 'templates/');
 
+
 function cpp_enqueue_scripts() {
     wp_enqueue_script('cpp_custom_script', plugins_url('/assets/js/script.js', __FILE__), array('jquery'), '1.0.0', true );
 
@@ -34,10 +35,17 @@ function cpp_enqueue_scripts() {
 
 add_action('wp_enqueue_scripts', 'cpp_enqueue_scripts');
 
+// Include prices meta
 if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php')) {
     require_once CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php';
 }
 
+// Include number plates
 if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'number_plates/number_plates.php')) {
     require_once CPP_PLUGIN_INCLUDES_PATH . 'number_plates/number_plates.php';
+}
+
+// Include prices meta shortcodes
+if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/prices_meta/prices_meta_shortcodes.php')) {
+    require_once CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/prices_meta/prices_meta_shortcodes.php';
 }
