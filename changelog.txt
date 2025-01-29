@@ -1,7 +1,10 @@
 *Custom Pricing Plugin*
 
-==Version 2.2.8==
--Separate shortcodes with other functions.
+==Version 2.3.0==
+-Enhance templates and functions usability and streamline user experience for Number plates page and widgets.
+
+==Version 2.2.9==
+-Enhance templates and functions usability and streamline user experience for variety of rental prices and widgets.
 
 ==Version 2.2.8==
 -Add information about templates.

@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.2.8
+ * Version: 2.3.0
  */
 
 //  Exit if accessed directly
@@ -40,12 +40,17 @@ if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php')) {
     require_once CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php';
 }
 
+// Include prices meta shortcodes
+if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/prices_meta/prices_meta_shortcode.php')) {
+    require_once CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/prices_meta/prices_meta_shortcode.php';
+}
+
 // Include number plates
 if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'number_plates/number_plates.php')) {
     require_once CPP_PLUGIN_INCLUDES_PATH . 'number_plates/number_plates.php';
 }
 
-// Include prices meta shortcodes
-if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/prices_meta/prices_meta_shortcodes.php')) {
-    require_once CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/prices_meta/prices_meta_shortcodes.php';
+// Include number plates shortcode
+if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/number_plates/number_plates_shortcode.php')) {
+    require_once CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/number_plates/number_plates_shortcode.php';
 }
