@@ -2,7 +2,8 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.3.2
+ * Version: 2.3.3
+ * License: GPL2
  */
 
 //  Exit if accessed directly
@@ -61,3 +62,8 @@ if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'number_plates/number_plates.php')) {
 if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/number_plates/number_plates_shortcode.php')) {
     require_once CPP_PLUGIN_INCLUDES_PATH . 'shortcodes/number_plates/number_plates_shortcode.php';
 }
+
+// Include number plates visitors count
+// if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'visitor_counter/visitor_counter.php')) {
+//     require_once CPP_PLUGIN_INCLUDES_PATH . 'visitor_counter/visitor_counter.php';
+// }

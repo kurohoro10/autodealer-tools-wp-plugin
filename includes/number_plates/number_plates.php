@@ -15,7 +15,7 @@ function create_custom_page_for_plates() {
         ]);
 
         if ($page_id) {
-            error_log('Page created succcessfully!');
+            error_log('Page created successfully!');
         }
     }
 }

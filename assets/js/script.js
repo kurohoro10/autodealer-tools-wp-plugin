@@ -1,4 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // for getting visitors count
+    const get_visitor_count = async () => {
+        try {
+            const response = await fetch(`${cpp_script_data.ajaxUrl}?action=cpp_get_number_plate_visits`, {
+                method: 'GET',
+                headers: {
+                    'X-WP-Nonce': cpp_script_data.nonce
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            console.log(data);
+            
+    
+            // if (data.success) {
+                
+            // } else {
+                
+            // }
+        } catch (error) {
+            console.error('Error fetching number plates: ', error);
+            
+        }
+    };
+
+    get_visitor_count();
+
     // Preview featured image before uploading.
     const featured_img = document.getElementById('featured_image');
     const prev_container = document.querySelector('.wp-cardealer-uploaded-file-preview');
@@ -83,13 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // container for displaying the list of number plates in listing page
-    const container = document.querySelector('.number_plates_listing');
+    const cpp_container = document.querySelector('.number_plates_listing');
 
     // Template to render the list of number plates
     const renderNumberPlates = (plates) => {
         if (plates.length === 0) {
-            if (container) {
-                container.innerHTML = `<div class="alert alert-warning">
+            if (cpp_container) {
+                cpp_container.innerHTML = `<div class="alert alert-warning">
                                             <p>You don't have any plates yet. Start by adding a new one.</p>
                                         </div>`;
                 return;
@@ -122,17 +153,17 @@ document.addEventListener('DOMContentLoaded', () => {
                                             ${plate.price}
                                         </span>
                                     </div>
-                                </div>							
+                                </div>
                             </div>
 
                             <div class="listing-info-date-expiry d-none d-md-block">
                                 <div class="listing-table-info-content-expiry">
-                                        --								
+                                        --
                                 </div>
                             </div>
                             <div class="status-listing-wrapper d-none d-md-block">
                                 <span class="status-listing publish">
-									Published							
+									Published
                                 </span>
                             </div>
                             <div class="view-listing-wrapper d-none d-md-block">
@@ -158,20 +189,20 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }).join('');
 
-        if (container) {
-            container.innerHTML = listHtml;
+        if (cpp_container) {
+            cpp_container.innerHTML = listHtml;
         }
     }
 
     const targetSelector = '.number-plate-button-delete';
 
     // Check if the class exist within the container
-    if (container && container.querySelector(targetSelector)) {
+    if (cpp_container && cpp_container.querySelector(targetSelector)) {
         console.log(`Element matching "${targetSelector}" already exists in the container`);
     }
 
     // Set up a MutationObserver to watch for future changes
-    if (container) {
+    if (cpp_container) {
         const observer = new MutationObserver(mutationsList => {
             for (const mutation of mutationsList) {
                 // Check if nodes are added to the container
@@ -195,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Start observing the container for child changes
-        observer.observe(container, { childList: true, subtree: true });
+        observer.observe(cpp_container, { childList: true, subtree: true });
     }
 
     // Stop observing (if needed) after some time or event
@@ -279,16 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 renderNumberPlates(data.data);
             } else {
-                if (container) {
-                    container.innerHTML = ` <div class="alert alert-warning">
+                if (cpp_container) {
+                    cpp_container.innerHTML = ` <div class="alert alert-warning">
                     <p>${data.data.message}.</p>
                     </div>`;
                 }
             }
         } catch (error) {
             console.error('Error fetching number plates: ', error);
-            if (container) {
-                container.innerHTML = ` <div class="alert alert-warning">
+            if (cpp_container) {
+                cpp_container.innerHTML = ` <div class="alert alert-warning">
                 <p>Failed to load number plates. Please try again later.</p>
                 </div>`;
             }
@@ -297,3 +328,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     get_number_list();
 });
+
+// For prices variant in single post page for listing
+document.addEventListener('DOMContentLoaded', () => {
+    const cpp_price_btn = document.querySelector('button.cpp_dropbtn');
+    const cpp_price_dropdown = document.getElementById('cpp_myDropdown');
+    const cpp_dropdown_item = document.querySelectorAll('.cpp_dropdown_item');
+    const cpp_price = document.querySelector('.cpp_price');
+    const cpp_rate_btn_ext =    `&nbsp;
+                                <span class="caret_icon">
+                                    <i class="fa fa-angle-down"></i>
+                                </span>`;
+
+    // For price dropdown
+    if (cpp_price_btn) {
+        cpp_price_btn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if (cpp_price_dropdown) {
+                cpp_price_dropdown.classList.contains('hidden') ? cpp_price_dropdown.classList.remove('hidden') : cpp_price_dropdown.classList.add('hidden');
+            }
+        });
+    }
+
+    // For dropdown item
+    if (cpp_dropdown_item) {
+        cpp_dropdown_item.forEach(price => {
+            price.addEventListener('click', (e) => {
+                const rate = price.querySelector('.cpp_rate').textContent;
+                const rate_amount = price.querySelector('.cpp_rate_amount').textContent;
+                
+                if (cpp_price) cpp_price.textContent = rate_amount ? cpp_add_commas(rate_amount) : '00.00';
+                if (cpp_price_btn) cpp_price_btn.innerHTML = rate ? rate + cpp_rate_btn_ext : 'Per Hour' + cpp_rate_btn_ext;
+                if (cpp_price_dropdown) cpp_price_dropdown.classList.add('hidden');
+            });
+        });
+    }
+});
+
+const cpp_add_commas = (number) => {
+    let num_str = number.toString();
+
+    return num_str.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+};

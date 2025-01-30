@@ -45,3 +45,64 @@ Version: 1.0.0
 .cpp_preview:hover img {
     filter: opacity(0.5);
 }
+/* For prices */
+.cpp_price {
+    font-size: clamp(50px, 5vw, 20px);
+}
+
+.currency {
+    position: relative;
+    transform: translateY(-20px);
+}
+
+button.cpp_dropbtn {
+    background: transparent;
+    border: none;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+span.caret_icon {
+    font-size: 15px;
+}
+
+.cpp_dropdown {
+    position: relative;
+    width: 100%;
+    max-width: 150px;
+}
+
+div#cpp_myDropdown {
+    position: absolute;
+    z-index: 2;
+    background: white;
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    box-shadow: 5px 5px 25px #0000002e;
+    top: 120%;
+    left: 3%;
+    width: 135px;
+}
+
+div#cpp_myDropdown:before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+    z-index: 2;
+}
+
+.cpp_dropdown_item {
+    padding: 0.3rem 2rem;
+    cursor: pointer;
+}
+
+.cpp_dropdown_item:hover {
+    background-color: #00000011;
+}

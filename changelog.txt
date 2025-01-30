@@ -1,4 +1,9 @@
 *Custom Pricing Plugin*
+
+==Version 2.3.3==
+-Changed price rate UI for more aesthetic feel.
+-Add commas to price for better readability.
+
 ==Version 2.3.2==
 -Delete previous featured image when changing to new one to declutter the images in the site.
 

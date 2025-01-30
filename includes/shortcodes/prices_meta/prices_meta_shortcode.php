@@ -11,9 +11,9 @@ function cpp_display_prices_shortcode($atts) {
     $daily_price = get_post_meta($atts['id'], '_cpp_daily_price', true) ?: 'N/A';
     $weekly_price = get_post_meta($atts['id'], '_cpp_weekly_price', true) ?: 'N/A';
 
-    $price_per_hour = $hourly_price !== 'N/A' ? 'RM ' . $hourly_price : $hourly_price;
-    $price_per_day = $daily_price !== 'N/A' ? 'RM ' . $daily_price : $daily_price;
-    $price_per_week = $weekly_price !== 'N/A' ? 'RM ' . $weekly_price : $weekly_price;
+    $price_per_hour = $hourly_price !== 'N/A' ? $hourly_price : $hourly_price;
+    $price_per_day = $daily_price !== 'N/A' ? $daily_price : $daily_price;
+    $price_per_week = $weekly_price !== 'N/A' ? $weekly_price : $weekly_price;
 
     ob_start();
     
