@@ -131,8 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </div>
                             </div>
                             <div class="status-listing-wrapper d-none d-md-block">
-                                <span class="status-listing preview">
-                                    Preview								
+                                <span class="status-listing publish">
+									Published							
                                 </span>
                             </div>
                             <div class="view-listing-wrapper d-none d-md-block">
