@@ -5,7 +5,7 @@
     <div>
         <div class="d_flex">
             <div class="currency">RM</div>
-            <div class="cpp_price"><?= esc_html(number_format($price_per_hour)); ?></div>
+            <div class="cpp_price"><?= esc_html($price_per_hour); ?></div>
             <div class="cpp_dropdown">
                 <button class="cpp_dropbtn">
                     Per Hour &nbsp;

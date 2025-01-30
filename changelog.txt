@@ -1,5 +1,8 @@
 *Custom Pricing Plugin*
 
+==Version 2.3.4==
+-Fix: Critical error for 'N/A' price.
+
 ==Version 2.3.3==
 -Changed price rate UI for more aesthetic feel.
 -Add commas to price for better readability.
