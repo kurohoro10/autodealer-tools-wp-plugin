@@ -87,7 +87,14 @@ function cpp_delete_number_plate() {
             wp_send_json_error(['message' => 'You do not have permission to delete this number plate.']);
             return;
         }
-        
+
+        // Get the featured image (Post thumbnail) ID
+        $thumbnail_id = get_post_thumbnail_id($plate_id);
+
+        if ($thumbnail_id) {
+            wp_delete_attachment($thumbnail_id, true);
+        }
+
         if (wp_delete_post($plate_id, true)) {
             wp_send_json_success(['message' => 'Number plate deleted successfully.']);
         } else {
@@ -216,10 +223,3 @@ function cpp_save_meta_box_data($post_id) {
         update_post_meta($post_id, 'cpp_price', $price);
     }
 }
-
-// Separate function for admin notice
-function cpp_show_price_error_notice() {
-    echo '<div class="notice notice-error"><p>Price must be a numeric value and cannot be empty.</p></div>';
-}
-
-add_action('save_post', 'cpp_save_meta_box_data');

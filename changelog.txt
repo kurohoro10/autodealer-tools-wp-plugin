@@ -1,5 +1,8 @@
 *Custom Pricing Plugin*
 
+==Version 2.3.1==
+-When post in number plate has been deleted also delete the corresponding image in the media.
+
 ==Version 2.3.0==
 -Enhance templates and functions usability and streamline user experience for Number plates page and widgets.
 

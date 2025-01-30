@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prev_container = document.querySelector('.wp-cardealer-uploaded-file-preview');
     const remove_btn = document.querySelector('.remove_btn_preview');
     const existing_img = document.getElementById('image_preview');
+    const remove_featured_image = document.getElementById('remove_featured_image');
 
     // Create remove button element in the img
     let remove_btn_preview = document.createElement('a');
@@ -45,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             img.remove();
             featured_img.value = null;
-            document.getElementById('remove_featured_image').value = "1";
         }); 
     }
 
@@ -54,9 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             existing_img.remove();
             featured_img.value = null;
-            document.getElementById('remove_featured_image').value = "1";
         }); 
     }
+
+    // Function for observing the DOM if the existing image exists
+    const obs = new MutationObserver(() => {
+        if (!document.getElementById('image_preview')) {
+            document.getElementById('remove_featured_image').value = '1'
+        } else {
+            document.getElementById('remove_featured_image').value = '0'
+        }
+    });
+
+    obs.observe(document.body, {childList: true, subtree: true});
 
     // Function for displaying image in the list
     const check_img_path = (path) => {

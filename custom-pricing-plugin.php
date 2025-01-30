@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.3.0
+ * Version: 2.3.1
  */
 
 //  Exit if accessed directly
@@ -34,6 +34,13 @@ function cpp_enqueue_scripts() {
 }
 
 add_action('wp_enqueue_scripts', 'cpp_enqueue_scripts');
+
+// Separate function for admin notice
+function cpp_show_price_error_notice() {
+    echo '<div class="notice notice-error"><p>Price must be a numeric value and cannot be empty.</p></div>';
+}
+
+add_action('save_post', 'cpp_save_meta_box_data');
 
 // Include prices meta
 if (file_exists(CPP_PLUGIN_INCLUDES_PATH . 'prices_meta/prices_meta.php')) {
