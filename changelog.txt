@@ -1,4 +1,6 @@
 *Custom Pricing Plugin*
+==Version 2.3.2==
+-Delete previous featured image when changing to new one to declutter the images in the site.
 
 ==Version 2.3.1==
 -When post in number plate has been deleted also delete the corresponding image in the media.

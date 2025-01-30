@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const prev_container = document.querySelector('.wp-cardealer-uploaded-file-preview');
     const remove_btn = document.querySelector('.remove_btn_preview');
     const existing_img = document.getElementById('image_preview');
-    const remove_featured_image = document.getElementById('remove_featured_image');
 
     // Create remove button element in the img
     let remove_btn_preview = document.createElement('a');
@@ -59,10 +58,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function for observing the DOM if the existing image exists
     const obs = new MutationObserver(() => {
-        if (!document.getElementById('image_preview')) {
-            document.getElementById('remove_featured_image').value = '1'
+        const existing_img = document.getElementById('image_preview');
+        const featured_image_preview = document.getElementById('remove_featured_image');
+        if (!existing_img) {
+            if (featured_image_preview) {
+                featured_image_preview.value = '1'
+            }
         } else {
-            document.getElementById('remove_featured_image').value = '0'
+            if (featured_image_preview) {
+                featured_image_preview.value = '0'
+            }
         }
     });
 
@@ -83,10 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Template to render the list of number plates
     const renderNumberPlates = (plates) => {
         if (plates.length === 0) {
-            container.innerHTML = `<div class="alert alert-warning">
-                                        <p>You don't have any plates yet. Start by adding a new one.</p>
-                                    </div>`;
-            return;
+            if (container) {
+                container.innerHTML = `<div class="alert alert-warning">
+                                            <p>You don't have any plates yet. Start by adding a new one.</p>
+                                        </div>`;
+                return;
+            }
         }
 
         const listHtml = plates.map(plate => {
@@ -272,15 +279,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 renderNumberPlates(data.data);
             } else {
-                container.innerHTML = ` <div class="alert alert-warning">
-                                            <p>${data.data.message}.</p>
-                                        </div>`;
+                if (container) {
+                    container.innerHTML = ` <div class="alert alert-warning">
+                    <p>${data.data.message}.</p>
+                    </div>`;
+                }
             }
         } catch (error) {
             console.error('Error fetching number plates: ', error);
-            container.innerHTML = ` <div class="alert alert-warning">
-                                        <p>Failed to load number plates. Please try again later.</p>
-                                    </div>`;
+            if (container) {
+                container.innerHTML = ` <div class="alert alert-warning">
+                <p>Failed to load number plates. Please try again later.</p>
+                </div>`;
+            }
         }
     };
 

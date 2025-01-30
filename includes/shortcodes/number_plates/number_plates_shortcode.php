@@ -6,10 +6,11 @@ function cpp_frontend_number_plates_input_shortcode() {
         return '<p>You need to be logged in to add a number plate.</p>';
     }
 
-    // Initialize feedback
+    // Initialize variables
     $plate_featured_img = '';
     $form_feedback = '';
     $post = null;
+    $post_id = null;
 
     // check if the query parameter is for editing post
     if (isset($_GET['plate_id']) && isset($_GET['action']) && $_GET['action'] === 'continue') {
@@ -25,7 +26,7 @@ function cpp_frontend_number_plates_input_shortcode() {
                 echo 'You are not the author of this post.';
             }
         } else {
-            echo 'No post found with the given ID.';
+            echo 'No post found for current user.';
         }
     }
 
@@ -40,6 +41,10 @@ function cpp_frontend_number_plates_input_shortcode() {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
             require_once(ABSPATH . 'wp-admin/includes/image.php');
 
+            // Get the old featured image ID
+            $old_thumbnail_id = get_post_thumbnail_id($post_id);
+
+            // Handle the new image upload
             $uploaded_file = wp_handle_upload($_FILES['featured_image'], array('test_form' => false));
 
             if ($uploaded_file && !isset($uploaded_file['error'])) {
@@ -54,11 +59,16 @@ function cpp_frontend_number_plates_input_shortcode() {
                     'post_status' => 'inherit'
                 );
 
-                $attachment_id = wp_insert_attachment($attachment, $filename);
+                $attachment_id = wp_insert_attachment($attachment, $filename, $post_id);
 
                 if (!is_wp_error($attachment_id)) {
                     $attachment_data = wp_generate_attachment_metadata($attachment_id, $filename);
                     wp_update_attachment_metadata($attachment_id, $attachment_data);
+
+                    // Delete old featured image if it exists
+                    if ($old_thumbnail_id) {
+                        wp_delete_attachment($old_thumbnail_id, true);
+                    }
 
                     $plate_featured_img = wp_get_attachment_url($attachment_id);
                 } else {
