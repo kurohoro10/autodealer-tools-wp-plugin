@@ -1,5 +1,8 @@
 *Custom Pricing Plugin*
 
+==Version 2.3.5==
+-Closes dropdown on scroll.
+
 ==Version 2.3.4==
 -Fix: Critical error for 'N/A' price.
 

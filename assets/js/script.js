@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    get_visitor_count();
+    // get_visitor_count();
 
     // Preview featured image before uploading.
     const featured_img = document.getElementById('featured_image');
@@ -326,7 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    get_number_list();
+    if (cpp_container) {
+        get_number_list();
+    }
 });
 
 // For prices variant in single post page for listing
@@ -364,6 +366,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    document.addEventListener('scroll', () => {
+        if (cpp_price_dropdown) !cpp_price_dropdown.classList.contains('hidden') ? cpp_price_dropdown.classList.add('hidden') : '';
+    });
 });
 
 const cpp_add_commas = (number) => {
