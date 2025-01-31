@@ -50,6 +50,7 @@ function cpp_get_number_plates() {
                 'thumbnail' => get_the_post_thumbnail_url(get_the_ID(), 'full') ?: '',
                 'permalink' => get_the_permalink(),
                 'title'     => get_the_title(),
+                'views'     => cpp_get_total_visits_for_user()[get_the_ID()],
                 'price'     => get_post_meta(get_the_ID(), 'cpp_price', true),
                 'nonce'     => wp_create_nonce('delete_number_plate_nonce')
             );
@@ -223,3 +224,5 @@ function cpp_save_meta_box_data($post_id) {
         update_post_meta($post_id, 'cpp_price', $price);
     }
 }
+
+add_action('save_post', 'cpp_save_meta_box_data');

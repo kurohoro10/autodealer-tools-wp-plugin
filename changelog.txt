@@ -1,5 +1,8 @@
 *Custom Pricing Plugin*
 
+==Version 2.4.5==
+-Added function to views in dealers dashboard.
+
 ==Version 2.3.5==
 -Closes dropdown on scroll.
 

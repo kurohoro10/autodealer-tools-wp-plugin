@@ -1,35 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // for getting visitors count
-    const get_visitor_count = async () => {
-        try {
-            const response = await fetch(`${cpp_script_data.ajaxUrl}?action=cpp_get_number_plate_visits`, {
-                method: 'GET',
-                headers: {
-                    'X-WP-Nonce': cpp_script_data.nonce
-                }
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-    
-            const data = await response.json();
-            console.log(data);
-            
-    
-            // if (data.success) {
-                
-            // } else {
-                
-            // }
-        } catch (error) {
-            console.error('Error fetching number plates: ', error);
-            
-        }
-    };
-
-    // get_visitor_count();
-
     // Preview featured image before uploading.
     const featured_img = document.getElementById('featured_image');
     const prev_container = document.querySelector('.wp-cardealer-uploaded-file-preview');
@@ -155,19 +124,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="listing-info-date-expiry d-none d-md-block">
-                                <div class="listing-table-info-content-expiry">
-                                        --
-                                </div>
-                            </div>
                             <div class="status-listing-wrapper d-none d-md-block">
                                 <span class="status-listing publish">
 									Published
                                 </span>
                             </div>
                             <div class="view-listing-wrapper d-none d-md-block">
-                                0							
+                                ${plate.views}							
                             </div>
                             <div class="warpper-action-listing">
                                 <a data-toggle="tooltip" href="/number-plates/?plate_id=${plate.id}&action=continue" class="edit-btn btn-action-icon edit  job-table-action" title="" data-bs-original-title="Continue">
@@ -306,6 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const data = await response.json();
+
+            console.log(data);
+            
 
             if (data.success) {
                 renderNumberPlates(data.data);

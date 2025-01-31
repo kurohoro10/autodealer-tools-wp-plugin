@@ -48,9 +48,6 @@
                         Information				
                     </div>
                     <div class="d-none d-md-block">
-                        Expiry				
-                    </div>
-                    <div class="d-none d-md-block">
                         Status				
                     </div>
                     <div class="d-none d-md-block">
