@@ -1,4 +1,67 @@
 document.addEventListener('DOMContentLoaded', () => {
+/********************************************************************************************
+ * 
+ * For search function in number plates
+ * 
+**********************************************************************************************/
+    const cpp_debounce = (func, delay) => {
+        let timer;
+        return function (...args) {
+            clearTimeout(timer);
+            timer = setTimeout(() => func.apply(this, args), delay);
+        };
+    };
+
+    const cpp_np_search = document.getElementById('cpp_np_search');
+    
+    if (cpp_np_search) {
+        cpp_np_search.addEventListener('input', cpp_debounce(async (e) => {
+            const container = document.querySelector('.number_plates_listing');
+            const search_query =  encodeURIComponent(e.target.value);
+
+            if (search_query === '') return; 
+
+            try {
+                const response = await fetch(`${cpp_script_data.ajaxUrl}?action=fetch_number_plates&search_cpp=${search_query}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-WP-Nonce': cpp_script_data.nonce
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+    
+                const data = await response.json();
+    
+                if (data.success) {
+                    renderNumberPlates(data.data);
+                    renderPagination(data.data.current_page, data.data.total_pages, search_query);
+                } else {
+                    if (container) {
+                        container.innerHTML = ` <div class="alert alert-warning">
+                        <p>${data.data.message}.</p>
+                        </div>`;
+                    }
+                }
+            } catch (error) {
+                console.error('Search error: ', error);
+                if (container) {
+                    container.innerHTML = ` <div class="alert alert-warning">
+                    <p>There's seem to be an error in the search results. Please try again later.</p>
+                    </div>`;
+                }
+            }
+        }, 300));
+    }
+    
+
+/********************************************************************************************
+ * 
+ * Image preview in number plates form in frontend
+ * 
+**********************************************************************************************/
     // Preview featured image before uploading.
     const featured_img = document.getElementById('featured_image');
     const prev_container = document.querySelector('.wp-cardealer-uploaded-file-preview');
@@ -82,12 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+/********************************************************************************************
+ * 
+ * For displaying the number plates list in the dealer dashboard
+ * 
+**********************************************************************************************/
     // container for displaying the list of number plates in listing page
     const cpp_container = document.querySelector('.number_plates_listing');
 
     // Template to render the list of number plates
-    const renderNumberPlates = (plates) => {
-        if (plates.length === 0) {
+    const renderNumberPlates = (data = []) => {
+        plates = data.plates;
+
+        if (!Array.isArray(plates) || plates.length === 0) {
             if (cpp_container) {
                 cpp_container.innerHTML = `<div class="alert alert-warning">
                                             <p>You don't have any plates yet. Start by adding a new one.</p>
@@ -157,6 +227,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Render Pagination
+    const renderPagination = (current_page, total_pages, query = '') => {
+        const pagination_container = document.getElementById('pagination');
+
+        if (!pagination_container) return;
+        
+        if (total_pages <= 1) {
+            pagination_container.innerHTML = '';
+            return;
+        }
+
+        let pagination_html = '';
+
+        // Prev button
+        if (current_page > 1) {
+            pagination_html = `<button class="pagination-btn" data-page="${current_page - 1}">« Prev</button>`;
+        }
+
+        // Page numbers
+        for (let i = 1; i <= total_pages; i++) {
+            pagination_html += `<button class="pagination-btn ${i === current_page ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+
+        // Next button
+        if (current_page < total_pages) {
+            pagination_html += `<button class="pagination-btn" data-page="${current_page + 1}">Next »</button>`;
+        }
+
+        pagination_container.innerHTML = pagination_html;
+
+        // Add event listener to pagination buttons
+        document.querySelectorAll('.pagination-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const page = parseInt(e.target.getAttribute("data-page"));
+                get_number_list('desc', page, query);
+            });
+        });
+    };
+
     const targetSelector = '.number-plate-button-delete';
 
     // Check if the class exist within the container
@@ -195,6 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Stop observing (if needed) after some time or event
     // observer.disconnect();
 
+/********************************************************************************************
+ * 
+ * For removing a data in the lists and updating the display
+ * 
+**********************************************************************************************/
     // Function to remove number plate of the lists.
     const remove_data = async (btn) => {
         const plate_id = btn.getAttribute('data-number_plate_id');
@@ -235,6 +349,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
+/********************************************************************************************
+ * 
+ * For displaying notification
+ * 
+**********************************************************************************************/
     // For displaying notifications
     const popup_message = (message, ...class_names) => {
         const div = document.createElement('div');
@@ -254,10 +373,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(div);
     };
 
+/********************************************************************************************
+ * 
+ * For fetching all data
+ * 
+**********************************************************************************************/
     // Fetch all the list of number plates for current user
-    const get_number_list = async () => {
+    const get_number_list = async (sort='desc', page = 1, query = '') => {
+        
         try {
-            const response = await fetch(`${cpp_script_data.ajaxUrl}?action=get_number_plates`, {
+            const response = await fetch(`${cpp_script_data.ajaxUrl}?action=fetch_number_plates&paged=${page}&sortedby=${sort}&search_cpp=${query}`, {
                 method: 'GET',
                 headers: {
                     'X-WP-Nonce': cpp_script_data.nonce
@@ -272,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.success) {
                 renderNumberPlates(data.data);
+                renderPagination(data.data.current_page, data.data.total_pages, query);
             } else {
                 if (cpp_container) {
                     cpp_container.innerHTML = ` <div class="alert alert-warning">
@@ -292,8 +418,28 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cpp_container) {
         get_number_list();
     }
-});
 
+/********************************************************************************************
+ * 
+ * For sorting the list order using AJAX
+ * 
+**********************************************************************************************/
+    const sorter = document.getElementById("sortby");
+
+    if (sorter) {
+        sorter.addEventListener("change", async () => {
+            console.log('clicked');
+           const sort = sorter.value;
+           get_number_list(sort, 1);
+        });
+    }
+}); // Its for DOMContentLoaded event listener
+
+/********************************************************************************************
+ * 
+ * For prices rates display in car rental details
+ * 
+**********************************************************************************************/
 // For prices variant in single post page for listing
 document.addEventListener('DOMContentLoaded', () => {
     const cpp_price_btn = document.querySelector('button.cpp_dropbtn');

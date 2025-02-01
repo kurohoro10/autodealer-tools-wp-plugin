@@ -23,44 +23,63 @@ function create_custom_page_for_plates() {
 add_action('init', 'create_custom_page_for_plates');
 
 // Register AJAX function for fetching number plates
-function cpp_get_number_plates() {
+function cpp_fetch_number_plates() {
     if (!is_user_logged_in()) {
-        wp_send_json_error(['message' => 'You need to be logged in to view number plates lists.']);
+        wp_send_json_error(['message' => 'You need to logged in to view number plates.']);
         return;
     }
 
     $current_user_id = get_current_user_id();
-    $args = array(
-        'post_type' => 'number_plates',
-        'posts_per_page' => -1,
-        'author' => $current_user_id,
-        'orderby' => 'date',
-        'order' => 'DESC'
-    );
+    $paged = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+    $post_per_page = 10;
+    $sort = isset($_GET['sortedby']) ? sanitize_text_field($_GET['sortedby']) : 'DESC';
+    $searh_query = isset($_GET['search_cpp']) ? sanitize_text_field($_GET['search_cpp']) : '';
+
+    // Base query arguments
+    $args = [
+        'post_type'      => 'number_plates',
+        'posts_per_page' => $post_per_page,
+        'paged'          => $paged,
+        'author'         => $current_user_id,
+        'orderby'        => 'date',
+        'order'          => $sort
+    ];
+
+    // If search query exists add it to the query
+    if (!empty($searh_query)) {
+        $args['s'] = $searh_query;
+    }
 
     $query = new WP_Query($args);
-
     $plates = [];
 
     if ($query->have_posts()) {
         while ($query->have_posts()) {
             $query->the_post();
             $plates[] = array(
-                'id'        => get_the_ID(),
+                'id' => get_the_ID(),
                 'thumbnail' => get_the_post_thumbnail_url(get_the_ID(), 'full') ?: '',
                 'permalink' => get_the_permalink(),
-                'title'     => get_the_title(),
-                'views'     => cpp_get_total_visits_for_user()[get_the_ID()],
-                'price'     => get_post_meta(get_the_ID(), 'cpp_price', true),
-                'nonce'     => wp_create_nonce('delete_number_plate_nonce')
+                'title' => get_the_title(),
+                'views' => cpp_get_total_visits_for_user()[get_the_ID()] ?? 0,
+                'price' => get_post_meta(get_the_ID(), 'cpp_price', true),
+                'nonce' => wp_create_nonce('delete_number_plate_nonce')
             );
         }
         wp_reset_postdata();
     }
-    wp_send_json_success($plates);
+    $total_pages = $query->max_num_pages;
+
+    wp_send_json_success([
+        'plates' => $plates,
+        'total_pages' => $total_pages,
+        'current_page' => $paged,
+        'orderby' => $sort
+    ]);
 }
 
-add_action('wp_ajax_get_number_plates', 'cpp_get_number_plates');
+add_action('wp_ajax_fetch_number_plates', 'cpp_fetch_number_plates');
+add_action('wp_ajax_nopriv_fetch_number_plates', 'cpp_fetch_number_plates');
 
 function cpp_delete_number_plate() {
     if (!is_user_logged_in()) {

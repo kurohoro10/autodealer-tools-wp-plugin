@@ -79,6 +79,3 @@ function cpp_get_total_visits_for_user() {
 }
 
 add_action('wp', 'cpp_get_total_visits_for_user');
-
-// add_action('wp_ajax_cpp_get_total_visits_for_user', 'cpp_get_total_visits_for_user');
-// add_action('wp_ajax_nopriv_cpp_get_total_visits_for_user', 'cpp_get_total_visits_for_user');

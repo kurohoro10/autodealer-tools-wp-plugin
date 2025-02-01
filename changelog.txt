@@ -1,5 +1,10 @@
 *Custom Pricing Plugin*
 
+==Version 2.4.6==
+-Added pagination to number plates lists.
+-Added function search to number plates lists.
+-Added sorter to number plates lists.
+
 ==Version 2.4.5==
 -Added function to views in dealers dashboard.
 

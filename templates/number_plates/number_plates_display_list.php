@@ -9,30 +9,36 @@
             <div class="d-md-flex align-items-center top-dashboard-search">
                 <!-- Search in list -->
                 <div class="search-my-listings-form widget-search search-listings-form">
-                    <form action="" method="get">
-                        <div class="d-flex align-items-center">
-                            <button class="search-submit btn btn-search">
-                                <i class="flaticon-search"></i>
-                            </button>
-                            <input placeholder="Search ..." class="form-control" type="text" name="search" value="">
-                        </div>
-                    </form>
+                    <div class="d-flex align-items-center">
+                        <button class="search-submit btn btn-search">
+                            <i class="flaticon-search"></i>
+                        </button>
+                        <input placeholder="Search ..." id="cpp_np_search" class="form-control" type="text" name="search" value="">
+                    </div>
                 </div>
 
                 <!-- Sort lists -->
                 <div class="sort-my-listings-form sortby-form ms-auto">
                     <div class="orderby-wrapper d-flex align-items-center">
                         <span class="text-sort">Sort by:</span>
-                        <form class="my-listings-ordering" method="get">
-                            <select name="orderby" class="orderby select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+                        <select name="sortby" id="sortby" class="orderby select2-hidden-accessible" tabindex="-1" aria-hidden="true">
                                 <option value="menu_order">Default</option>
                                 <option value="newest" selected="selected">Newest</option>
                                 <option value="oldest">Oldest</option>
-                            </select>
-                            <input type="hidden" name="paged" value="1">
-                        </form>
+                        </select>
                     </div>
                 </div>
+                <!-- <div class="sort-my-listings-form sortby-form ms-auto">
+                    <div class="orderby-wrapper d-flex align-items-center">
+                        <span class="text-sort">Sort by: </span>
+                        <select name="sortby" id="sortby" class="select2-selection select2-selection--single">
+                            <option value="default" selected="selected">Default</option>
+                            <option value="desc">Newest</option>
+                            <option value="asc">Oldest</option>
+                        </select>
+                        <input type="hidden" name="paged" value="1">
+                    </div>
+                </div> -->
             </div>
         </div>
 
@@ -63,5 +69,6 @@
             <div class="number_plates_listing">
                 <p class="loading">Loading number plates please wait ...</p>
             </div>
+            <div id="pagination"></div>
         </div>
     </div>

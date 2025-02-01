@@ -106,3 +106,28 @@ div#cpp_myDropdown:before {
 .cpp_dropdown_item:hover {
     background-color: #00000011;
 }
+
+/* Pagination */
+div#pagination {
+    display: flex;
+    justify-content: center;
+    padding-top: 1.3rem;
+    border-top: 1px solid #E9E9E9;
+    margin-top: 1rem;
+}
+
+button.pagination-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    transition: all ease-in-out 0.3s;
+}
+
+button.pagination-btn:hover, button.pagination-btn.active {
+    color: #525017;
+}
+
+button.pagination-btn.active {
+    font-weight: bold;
+    font-size: 24px;
+}
