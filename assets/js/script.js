@@ -235,6 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (total_pages <= 1) {
             pagination_container.innerHTML = '';
+            pagination_container.style.border = 'none';
+            pagination_container.style.padding = '0px';
+            pagination_container.style.margin = '0px';
             return;
         }
 

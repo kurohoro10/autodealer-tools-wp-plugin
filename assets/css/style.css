@@ -107,6 +107,14 @@ div#cpp_myDropdown:before {
     background-color: #00000011;
 }
 
+/* For selec dropdown */
+select#sortby {
+    border: 1px solid #00000017;
+    width: 180px;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+}
+
 /* Pagination */
 div#pagination {
     display: flex;

@@ -18,7 +18,7 @@
                 </div>
 
                 <!-- Sort lists -->
-                <div class="sort-my-listings-form sortby-form ms-auto">
+                <!-- <div class="sort-my-listings-form sortby-form ms-auto">
                     <div class="orderby-wrapper d-flex align-items-center">
                         <span class="text-sort">Sort by:</span>
                         <select name="sortby" id="sortby" class="orderby select2-hidden-accessible" tabindex="-1" aria-hidden="true">
@@ -27,8 +27,8 @@
                                 <option value="oldest">Oldest</option>
                         </select>
                     </div>
-                </div>
-                <!-- <div class="sort-my-listings-form sortby-form ms-auto">
+                </div> -->
+                <div class="sort-my-listings-form sortby-form ms-auto">
                     <div class="orderby-wrapper d-flex align-items-center">
                         <span class="text-sort">Sort by: </span>
                         <select name="sortby" id="sortby" class="select2-selection select2-selection--single">
@@ -38,7 +38,7 @@
                         </select>
                         <input type="hidden" name="paged" value="1">
                     </div>
-                </div> -->
+                </div>
             </div>
         </div>
 
