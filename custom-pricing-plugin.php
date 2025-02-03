@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Custom Pricing Plugin
  * Description: Adds custom fields for hourly, daily, and weekly prices to the "listing" post type and provides shortcodes for display and frontend input.
- * Version: 2.4.9
+ * Version: 2.4.10
  * License: GPL2
  */
 

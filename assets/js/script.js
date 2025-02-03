@@ -1,12 +1,17 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // container for displaying the list of number plates in listing page
+    const cpp_container = document.querySelector('.number_plates_listing');
+    const cpp_pagination_container = document.getElementById('pagination');
+    const sorter_array = {
+        cpp_default: 'desc',
+        cpp_newest: 'desc',
+        cpp_oldest: 'asc'
+    }
 /********************************************************************************************
  * 
  * For search function in number plates
  * 
 **********************************************************************************************/
-    // container for displaying the list of number plates in listing page
-    const cpp_container = document.querySelector('.number_plates_listing');
-    const cpp_pagination_container = document.getElementById('pagination');
 
     const cpp_loader = (container = cpp_container) => {
         return container.innerHTML =    `<div class="loading loading01">
@@ -34,8 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
         cpp_np_search.addEventListener('input', cpp_debounce(async (e) => {
             const container = document.querySelector('.number_plates_listing');
             const search_query =  encodeURIComponent(e.target.value);
-
-            if (search_query === '') return; 
+            const current_sort_order = document.getElementById('sortby').classList[0];
+            
+            if (search_query === '') get_number_list();
 
             cpp_loader(container);
 
@@ -57,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 if (data.success) {
                     cpp_pagination_container.classList.remove('hidden');
-                    renderNumberPlates(data.data);
+                    get_number_list(sorter_array[current_sort_order], 1, search_query);
                     renderPagination(data.data.current_page, data.data.total_pages, search_query);
                 } else {
                     if (container) {
@@ -358,6 +364,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.remove('loading');
 
             if (data.success) {
+                cpp_loader();
                 popup_message('Number plate deleted successfully.', 'alert', 'bg-info');
                 get_number_list();
             } else {
@@ -452,12 +459,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cpp_sorter_content = document.querySelector('.cpp_sort_dropdown_content');
     const cpp_sorter_content_dropdown = document.querySelectorAll('.cpp_sort_dropdown_content ul li a');
 
-    const sorter_array = {
-        cpp_default: 'desc',
-        cpp_newest: 'desc',
-        cpp_oldest: 'asc'
-    }
-
     if (cpp_sorter) {
         cpp_sorter.addEventListener("click", async () => {
             if (cpp_sorter_content) cpp_sorter_content.classList.toggle('hidden');
@@ -469,13 +470,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cpp_sorter_content_dropdown) {
         cpp_sorter_content_dropdown.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                e.stopPropagation(); 
+                e.stopPropagation();
+                e.preventDefault();
     
                 const selectedSortKey = btn.classList[0];
                 const btn_label = document.querySelector('.cpp_sort_btn_label');
     
                 if (btn_label) {
                     btn_label.textContent = btn.textContent;
+                    cpp_sorter.classList.add(selectedSortKey);
                 }
     
                 if (cpp_pagination_container) cpp_pagination_container.classList.add('hidden');

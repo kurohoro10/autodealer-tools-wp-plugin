@@ -28,9 +28,9 @@
                             </button>
                             <div class="cpp_sort_dropdown_content hidden">
                                 <ul>
-                                    <li><a href="#" class="cpp_default cpp_active">Default</a></li>
-                                    <li><a href="#" class="cpp_newest">Newest</a></li>
-                                    <li><a href="#" class="cpp_oldest">Oldest</a></li>
+                                    <li><a href="javascript:void(0)" class="cpp_default cpp_active">Default</a></li>
+                                    <li><a href="javascript:void(0)" class="cpp_newest">Newest</a></li>
+                                    <li><a href="javascript:void(0)" class="cpp_oldest">Oldest</a></li>
                                 </ul>
                             </div>
                         </div>

@@ -1,5 +1,9 @@
 *Custom Pricing Plugin*
 
+==Version 2.4.10==
+-Made search more comprehensive.
+-Now it sort search result base on current sort details.
+
 ==Version 2.4.9==
 -Made some element color dynamic.
 
