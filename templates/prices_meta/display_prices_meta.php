@@ -10,7 +10,7 @@
                 <button class="cpp_dropbtn">
                     Per Hour &nbsp;
                     <span class="caret_icon">
-                        <i class="fa fa-angle-down"></i>
+                        <i class="fa fa-caret-down"></i>
                     </span>
                 </button>
 
