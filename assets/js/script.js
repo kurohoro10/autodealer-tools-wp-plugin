@@ -33,54 +33,65 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    const cpp_np_search = document.getElementById('cpp_np_search');
-    
-    if (cpp_np_search) {
-        cpp_np_search.addEventListener('input', cpp_debounce(async (e) => {
-            const container = document.querySelector('.number_plates_listing');
-            const search_query =  encodeURIComponent(e.target.value);
-            const current_sort_order = document.getElementById('sortby').classList[0];
-            
-            if (search_query === '') get_number_list();
+    const cpp_search_number_plates = async (e) => {
+        const container = document.querySelector('.number_plates_listing');
+        const search_query =  encodeURIComponent(e.target.value);
+        const current_sort_order = document.getElementById('sortby').classList[0];
+        
+        if (search_query === '') get_number_list();
 
-            cpp_loader(container);
+        cpp_loader(container);
 
-            if (cpp_pagination_container) cpp_pagination_container.classList.add('hidden');
+        if (cpp_pagination_container) cpp_pagination_container.classList.add('hidden');
 
-            try {
-                const response = await fetch(`${cpp_script_data.ajaxUrl}?action=fetch_number_plates&search_cpp=${search_query}`, {
-                    method: 'GET',
-                    headers: {
-                        'X-WP-Nonce': cpp_script_data.nonce
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const response = await fetch(`${cpp_script_data.ajaxUrl}?action=fetch_number_plates&search_cpp=${search_query}`, {
+                method: 'GET',
+                headers: {
+                    'X-WP-Nonce': cpp_script_data.nonce
                 }
-    
-                const data = await response.json();
-    
-                if (data.success) {
-                    cpp_pagination_container.classList.remove('hidden');
-                    get_number_list(sorter_array[current_sort_order], 1, search_query);
-                    renderPagination(data.data.current_page, data.data.total_pages, search_query);
-                } else {
-                    if (container) {
-                        container.innerHTML = ` <div class="alert alert-warning">
-                        <p>${data.data.message}.</p>
-                        </div>`;
-                    }
-                }
-            } catch (error) {
-                console.error('Search error: ', error);
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                cpp_pagination_container.classList.remove('hidden');
+                get_number_list(sorter_array[current_sort_order], 1, search_query);
+                renderPagination(data.data.current_page, data.data.total_pages, search_query);
+            } else {
                 if (container) {
                     container.innerHTML = ` <div class="alert alert-warning">
-                    <p>There's seem to be an error in the search results. Please try again later.</p>
+                    <p>${data.data.message}.</p>
                     </div>`;
                 }
             }
-        }, 300));
+        } catch (error) {
+            console.error('Search error: ', error);
+            if (container) {
+                container.innerHTML = ` <div class="alert alert-warning">
+                <p>There's seem to be an error in the search results. Please try again later.</p>
+                </div>`;
+            }
+        }
+    };
+
+    const cpp_np_search = document.getElementById('cpp_np_search');
+    const cpp_np_search_btn = document.querySelector('button.search-submit.btn.btn-search');
+    
+    if (cpp_np_search) {
+        cpp_np_search.addEventListener('input', cpp_debounce( (e) => {
+            cpp_search_number_plates(e);
+        }, 1000));
+    }
+
+    if (cpp_np_search_btn) {
+        cpp_np_search_btn.addEventListener('click', (e) => {
+            cpp_search_number_plates(e);
+        });
     }
     
 
@@ -475,9 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 const selectedSortKey = btn.classList[0];
                 const btn_label = document.querySelector('.cpp_sort_btn_label');
+                const current_search = document.getElementById('cpp_np_search').value;
     
                 if (btn_label) {
                     btn_label.textContent = btn.textContent;
+                    cpp_sorter.className = '';
                     cpp_sorter.classList.add(selectedSortKey);
                 }
     
@@ -486,8 +499,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (cpp_sorter.classList.contains('cpp_dropdown_active')) {
                     cpp_sorter.classList.remove('cpp_dropdown_active');
                 }
-    
-                if (sorter_array[selectedSortKey]) {
+
+                if (current_search !== '') {
+                    cpp_loader();
+                    cpp_pagination_container.classList.remove('hidden');
+                    get_number_list(sorter_array[selectedSortKey], 1, current_search);
+                } else if (sorter_array[selectedSortKey]) {
                     cpp_loader();
                     cpp_pagination_container.classList.remove('hidden');
                     get_number_list(sorter_array[selectedSortKey], 1);
