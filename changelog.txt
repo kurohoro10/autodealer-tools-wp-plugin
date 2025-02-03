@@ -1,5 +1,12 @@
 *Custom Pricing Plugin*
 
+==Version 2.4.9==
+-Made some element color dynamic.
+
+==Version 2.4.8==
+-Add loading animation when fetching data.
+-Streamline user experience for sorting and searching in the plates lists.
+
 ==Version 2.4.7==
 -Rmoved bottom border if there's only 1 page for the table in number plates list.
 -Stylized number plates list sort dropdown.

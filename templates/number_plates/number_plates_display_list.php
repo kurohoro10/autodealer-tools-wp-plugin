@@ -18,25 +18,22 @@
                 </div>
 
                 <!-- Sort lists -->
-                <!-- <div class="sort-my-listings-form sortby-form ms-auto">
-                    <div class="orderby-wrapper d-flex align-items-center">
-                        <span class="text-sort">Sort by:</span>
-                        <select name="sortby" id="sortby" class="orderby select2-hidden-accessible" tabindex="-1" aria-hidden="true">
-                                <option value="menu_order">Default</option>
-                                <option value="newest" selected="selected">Newest</option>
-                                <option value="oldest">Oldest</option>
-                        </select>
-                    </div>
-                </div> -->
                 <div class="sort-my-listings-form sortby-form ms-auto">
                     <div class="orderby-wrapper d-flex align-items-center">
                         <span class="text-sort">Sort by: </span>
-                        <select name="sortby" id="sortby" class="select2-selection select2-selection--single">
-                            <option value="default" selected="selected">Default</option>
-                            <option value="desc">Newest</option>
-                            <option value="asc">Oldest</option>
-                        </select>
-                        <input type="hidden" name="paged" value="1">
+                        <div class="cpp_sort_dropdown">
+                            <button id="sortby">
+                                <span class="cpp_sort_btn_label">Default</span>
+                                <span><i class="fa fa-caret-down"></i></span>
+                            </button>
+                            <div class="cpp_sort_dropdown_content hidden">
+                                <ul>
+                                    <li><a href="#" class="cpp_default cpp_active">Default</a></li>
+                                    <li><a href="#" class="cpp_newest">Newest</a></li>
+                                    <li><a href="#" class="cpp_oldest">Oldest</a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -67,7 +64,15 @@
 
             <!-- Inner item -->
             <div class="number_plates_listing">
-                <p class="loading">Loading number plates please wait ...</p>
+                <div class="loading loading01">
+                    <span>L</span>
+                    <span>O</span>
+                    <span>A</span>
+                    <span>D</span>
+                    <span>I</span>
+                    <span>N</span>
+                    <span>G</span>
+                </div>
             </div>
             <div id="pagination"></div>
         </div>

@@ -4,6 +4,22 @@ document.addEventListener('DOMContentLoaded', () => {
  * For search function in number plates
  * 
 **********************************************************************************************/
+    // container for displaying the list of number plates in listing page
+    const cpp_container = document.querySelector('.number_plates_listing');
+    const cpp_pagination_container = document.getElementById('pagination');
+
+    const cpp_loader = (container = cpp_container) => {
+        return container.innerHTML =    `<div class="loading loading01">
+                                            <span>L</span>
+                                            <span>O</span>
+                                            <span>A</span>
+                                            <span>D</span>
+                                            <span>I</span>
+                                            <span>N</span>
+                                            <span>G</span>
+                                        </div>`;
+    };
+
     const cpp_debounce = (func, delay) => {
         let timer;
         return function (...args) {
@@ -21,6 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (search_query === '') return; 
 
+            cpp_loader(container);
+
+            if (cpp_pagination_container) cpp_pagination_container.classList.add('hidden');
+
             try {
                 const response = await fetch(`${cpp_script_data.ajaxUrl}?action=fetch_number_plates&search_cpp=${search_query}`, {
                     method: 'GET',
@@ -36,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
     
                 if (data.success) {
+                    cpp_pagination_container.classList.remove('hidden');
                     renderNumberPlates(data.data);
                     renderPagination(data.data.current_page, data.data.total_pages, search_query);
                 } else {
@@ -150,9 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
  * For displaying the number plates list in the dealer dashboard
  * 
 **********************************************************************************************/
-    // container for displaying the list of number plates in listing page
-    const cpp_container = document.querySelector('.number_plates_listing');
-
     // Template to render the list of number plates
     const renderNumberPlates = (data = []) => {
         plates = data.plates;
@@ -235,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (total_pages <= 1) {
             pagination_container.innerHTML = '';
-            pagination_container.style.border = 'none';
+            pagination_container.style.borderTop = 'none';
             pagination_container.style.padding = '0px';
             pagination_container.style.margin = '0px';
             return;
@@ -376,13 +394,15 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(div);
     };
 
-/********************************************************************************************
+/*********************************************************************************************
  * 
  * For fetching all data
  * 
 **********************************************************************************************/
     // Fetch all the list of number plates for current user
     const get_number_list = async (sort='desc', page = 1, query = '') => {
+
+        if (cpp_pagination_container) cpp_pagination_container.classList.add('hidden');
         
         try {
             const response = await fetch(`${cpp_script_data.ajaxUrl}?action=fetch_number_plates&paged=${page}&sortedby=${sort}&search_cpp=${query}`, {
@@ -399,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.success) {
+                cpp_pagination_container.classList.remove('hidden');
                 renderNumberPlates(data.data);
                 renderPagination(data.data.current_page, data.data.total_pages, query);
             } else {
@@ -427,15 +448,64 @@ document.addEventListener('DOMContentLoaded', () => {
  * For sorting the list order using AJAX
  * 
 **********************************************************************************************/
-    const sorter = document.getElementById("sortby");
+    const cpp_sorter = document.getElementById("sortby");
+    const cpp_sorter_content = document.querySelector('.cpp_sort_dropdown_content');
+    const cpp_sorter_content_dropdown = document.querySelectorAll('.cpp_sort_dropdown_content ul li a');
 
-    if (sorter) {
-        sorter.addEventListener("change", async () => {
-            console.log('clicked');
-           const sort = sorter.value;
-           get_number_list(sort, 1);
+    const sorter_array = {
+        cpp_default: 'desc',
+        cpp_newest: 'desc',
+        cpp_oldest: 'asc'
+    }
+
+    if (cpp_sorter) {
+        cpp_sorter.addEventListener("click", async () => {
+            if (cpp_sorter_content) cpp_sorter_content.classList.toggle('hidden');
+            cpp_sorter.classList.toggle('cpp_dropdown_active');
+
         });
     }
+
+    if (cpp_sorter_content_dropdown) {
+        cpp_sorter_content_dropdown.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+    
+                const selectedSortKey = btn.classList[0];
+                const btn_label = document.querySelector('.cpp_sort_btn_label');
+    
+                if (btn_label) {
+                    btn_label.textContent = btn.textContent;
+                }
+    
+                if (cpp_pagination_container) cpp_pagination_container.classList.add('hidden');
+    
+                if (cpp_sorter.classList.contains('cpp_dropdown_active')) {
+                    cpp_sorter.classList.remove('cpp_dropdown_active');
+                }
+    
+                if (sorter_array[selectedSortKey]) {
+                    cpp_loader();
+                    cpp_pagination_container.classList.remove('hidden');
+                    get_number_list(sorter_array[selectedSortKey], 1);
+                }
+    
+                cpp_sorter_content_dropdown.forEach(item => item.classList.remove('cpp_active'));
+    
+                btn.classList.add('cpp_active');
+    
+                cpp_sorter_content.classList.add('hidden');
+            });
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        if (cpp_sorter_content && !cpp_sorter_content.classList.contains('hidden') && !cpp_sorter_content.contains(e.target) && cpp_sorter && !cpp_sorter.contains(e.target)) {
+            cpp_sorter_content.classList.add('hidden');
+            cpp_sorter.classList.remove('cpp_dropdown_active');
+        }
+    });
+    
 }); // Its for DOMContentLoaded event listener
 
 /********************************************************************************************
@@ -451,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cpp_price = document.querySelector('.cpp_price');
     const cpp_rate_btn_ext =    `&nbsp;
                                 <span class="caret_icon">
-                                    <i class="fa fa-angle-down"></i>
+                                    <i class="fa fa-caret-down"></i>
                                 </span>`;
 
     // For price dropdown

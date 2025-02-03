@@ -4,6 +4,11 @@ Description: A child theme for the Boxcar theme.
 Template: boxcar
 Version: 1.0.0
 */
+
+.orderby-wrapper.d-flex.align-items-center span.text-sort {
+    width: 100%;
+}
+
 .d_flex {
     display: flex;
     align-items: center;
@@ -45,6 +50,24 @@ Version: 1.0.0
 .cpp_preview:hover img {
     filter: opacity(0.5);
 }
+
+.cpp_sort_dropdown_content ul {
+    padding: 0;
+    margin: 0;
+}
+
+.cpp_sort_dropdown_content ul li {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cpp_sort_dropdown_content ul li a {
+    width: 100%;
+    display: block;
+    padding: 4px 20px;
+}
+
 /* For prices */
 .cpp_price {
     font-size: clamp(50px, 5vw, 20px);
@@ -55,13 +78,22 @@ Version: 1.0.0
     transform: translateY(-20px);
 }
 
-button.cpp_dropbtn {
+button.cpp_dropbtn, .cpp_sort_dropdown button {
     background: transparent;
     border: none;
     outline: none;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.cpp_sort_dropdown button {
+    border: 1px solid #00000017;
+    border-radius: 10px;
+    width: 170px;
+    padding: 0.3rem 1.3rem;
+    display: flex;
+    justify-content: space-between;
 }
 
 span.caret_icon {
@@ -74,7 +106,17 @@ span.caret_icon {
     max-width: 150px;
 }
 
-div#cpp_myDropdown {
+.cpp_sort_dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.cpp_dropdown_active {
+    border: 2px solid var(--boxcar-theme-color)!important;
+    outline: 2px solid var(--boxcar-theme-color) !important;
+}
+
+div#cpp_myDropdown, .cpp_sort_dropdown_content {
     position: absolute;
     z-index: 2;
     background: white;
@@ -84,6 +126,12 @@ div#cpp_myDropdown {
     top: 120%;
     left: 3%;
     width: 135px;
+}
+
+.cpp_sort_dropdown_content {
+    width: 100%;
+    max-width: 160px;
+    top: 45px;
 }
 
 div#cpp_myDropdown:before {
@@ -107,7 +155,11 @@ div#cpp_myDropdown:before {
     background-color: #00000011;
 }
 
-/* For selec dropdown */
+.cpp_active {
+    color: var(--boxcar-theme-color) !important;
+}
+
+/* For select dropdown */
 select#sortby {
     border: 1px solid #00000017;
     width: 180px;
@@ -132,10 +184,37 @@ button.pagination-btn {
 }
 
 button.pagination-btn:hover, button.pagination-btn.active {
-    color: #525017;
+    color: var(--boxcar-theme-color);
 }
 
 button.pagination-btn.active {
     font-weight: bold;
     font-size: 24px;
+}
+
+/* Loading animation */
+.loading {
+    text-align: center;
+}
+
+.loading span {
+    display: inline-block;
+    margin: 0 -0.05rem;
+}
+
+.loading01 span {
+    animation: loading01 1.4s infinite alternate;
+}
+
+.loading01 span:nth-child(1) { animation-delay: 0s; }
+.loading01 span:nth-child(2) { animation-delay: 0.1s; }
+.loading01 span:nth-child(3) { animation-delay: 0.2s; }
+.loading01 span:nth-child(4) { animation-delay: 0.3s; }
+.loading01 span:nth-child(5) { animation-delay: 0.4s; }
+.loading01 span:nth-child(6) { animation-delay: 0.5s; }
+.loading01 span:nth-child(7) { animation-delay: 0.6s; }
+
+@keyframes loading01 {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
 }
