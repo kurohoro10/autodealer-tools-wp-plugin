@@ -3,7 +3,7 @@
 function cpp_add_price_meta_boxes() {
     add_meta_box(
         'cpp_pricing_meta_box',
-        __('Pricing Information', 'cpp'),
+        __('Rental Pricing Information (Leave blank if for sale)', 'cpp'),
         'cpp_render_pricing_meta_box',
         'listing',
         'normal',

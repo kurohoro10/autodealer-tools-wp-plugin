@@ -1,5 +1,8 @@
 *Custom Pricing Plugin*
 
+==Version 2.4.11==
+-Hide rental price in for sale listing and hide sale price for rental listing.
+
 ==Version 2.4.10==
 -Made search more comprehensive.
 -Now it sort search result base on current sort details.

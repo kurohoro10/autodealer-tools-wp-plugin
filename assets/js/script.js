@@ -572,6 +572,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('scroll', () => {
         if (cpp_price_dropdown) !cpp_price_dropdown.classList.contains('hidden') ? cpp_price_dropdown.classList.add('hidden') : '';
     });
+
+    // Hide price in car detail page if the tag is for sale
+    const listing_tag = document.querySelector('.status-property-label');
+    const rental_prices = document.querySelector('.cpp_prices');
+    const listing_detail_price = document.querySelector('.elementor-widget-apus_element_detail_listing_price');
+
+    if (listing_tag.textContent == 'For Sale') {
+        rental_prices.style.display = 'none';
+    }  else if (listing_tag.textContent == 'For Rent') {
+        listing_detail_price.style.display = 'none';
+    }
 });
 
 const cpp_add_commas = (number) => {
